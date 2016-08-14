@@ -1,0 +1,6 @@
+framework module Pods_SwiftySoundRecorder_Tests {
+  umbrella header "Pods-SwiftySoundRecorder_Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}

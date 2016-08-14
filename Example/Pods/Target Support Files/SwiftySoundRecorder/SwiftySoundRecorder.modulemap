@@ -1,0 +1,6 @@
+framework module SwiftySoundRecorder {
+  umbrella header "SwiftySoundRecorder-umbrella.h"
+
+  export *
+  module * { export * }
+}

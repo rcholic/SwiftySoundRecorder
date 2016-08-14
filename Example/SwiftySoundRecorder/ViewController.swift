@@ -7,18 +7,32 @@
 //
 
 import UIKit
+import SwiftySoundRecorder
+import SnapKit
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        print("loaded example vC!")
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    @IBAction func didTapRecordButton(sender: AnyObject) {
+        
+        let recordRC = SwiftySoundRecorder()
+        recordRC.delegate = self
+        presentViewController(recordRC, animated: true, completion: nil)
     }
+}
 
+extension ViewController: SwiftySoundRecorderDelegate {
+    func doneRecordingDidPress(soundRecorder: SwiftySoundRecorder, audioFilePath: String) {
+        print("done recording button tapped")
+    }
+    
+    func cancelRecordingDidPress(soundRecorder: SwiftySoundRecorder) {
+        print("cancelled!")
+    }
 }
 

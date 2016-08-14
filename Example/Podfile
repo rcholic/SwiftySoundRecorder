@@ -2,6 +2,9 @@ use_frameworks!
 
 target 'SwiftySoundRecorder_Example' do
   pod 'SwiftySoundRecorder', :path => '../'
+  pod 'SCSiriWaveformView'
+  pod 'FDWaveformView'#, :git => 'https://github.com/hackiftekhar/FDWaveformView.git', :commit => '65369f6729bec964db984b7f7439a915342237de'
+  
 
   target 'SwiftySoundRecorder_Tests' do
     inherit! :search_paths
