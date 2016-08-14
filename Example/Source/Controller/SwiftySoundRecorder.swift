@@ -39,7 +39,7 @@ public class SwiftySoundRecorder: UIViewController {
     
     private var waveHighlightedTintColor = Configuration.recorderWaveHighlightedTintColor
     
-    private let frostedView = UIVisualEffectView(effect: UIBlurEffect(style: .Dark))    
+    private let frostedView = UIVisualEffectView(effect: UIBlurEffect(style: .Dark))
     
     private let waveUpdateInterval: NSTimeInterval = 0.01
     private let navbarHeight: CGFloat = Configuration.navBarHeight
