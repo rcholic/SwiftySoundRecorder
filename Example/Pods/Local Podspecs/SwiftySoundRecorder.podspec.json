@@ -1,6 +1,6 @@
 {
   "name": "SwiftySoundRecorder",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "summary": "A Swift ySound Recorder with Sound Wave Views.",
   "homepage": "https://github.com/rcholic/SwiftySoundRecorder",
   "license": {
@@ -11,8 +11,8 @@
     "rcholic": "ivytony@gmail.com"
   },
   "source": {
-    "git": "https://github.com/<GITHUB_USERNAME>/SwiftySoundRecorder.git",
-    "tag": "0.1.0"
+    "git": "https://github.com/rcholic/SwiftySoundRecorder.git",
+    "tag": "0.0.1"
   },
   "platforms": {
     "ios": "8.0"
@@ -35,8 +35,8 @@
     "SCSiriWaveformView": [
       "~> 1.0.3"
     ],
-    "FDWaveformView": [
-      "~> 1.0.1"
+    "FDWaveformViewForked": [
+      "~> 0.5.0"
     ]
   }
 }
