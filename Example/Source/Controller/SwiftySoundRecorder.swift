@@ -356,6 +356,13 @@ public class SwiftySoundRecorder: UIViewController {
             make.width.height.equalTo(35)
         }
         
+        bottomNavBar.addSubview(undoTrimmingButton)
+        undoTrimmingButton.snp_makeConstraints { (make) in
+            make.top.equalTo(scissorButton.snp_top)
+            make.right.equalTo(scissorButton.snp_left).offset(-5)
+            make.width.height.equalTo(35)
+        }
+        
 //        bottomNavBar.addSubview(pauseRecordingButton)
 //        pauseRecordingButton.snp_makeConstraints { (make) in
 //            make.center.equalTo(bottomNavBar)
@@ -366,7 +373,8 @@ public class SwiftySoundRecorder: UIViewController {
     private func changeUIForOperation(mode: SwiftySoundMode) {
         switch mode {
         case .Idling:
-//            scissorButton.enabled = false
+            undoTrimmingButton.hidden = true
+            scissorButton.enabled = curAudioPathStr != nil
             stopButton.hidden = curAudioPathStr != nil
             stopButton.enabled = stopButton.hidden
             playButton.hidden = !stopButton.hidden // alternate playButton and stopButton (for recording)
@@ -374,10 +382,12 @@ public class SwiftySoundRecorder: UIViewController {
             micButton.enabled = true
             doneButton.enabled = curAudioPathStr != nil
             clockIcon.tintColor = UIColor(white: 1, alpha: 0.9) // restore the original tint
+            timeLabel.textColor = UIColor(white: 1, alpha: 0.9) // restore the original tint
         
         case .Recording:
             print("recording")
             _loadAudioSiriWaveView()
+            undoTrimmingButton.hidden = true
             playButton.hidden = true
             stopButton.enabled = true
             scissorButton.enabled = false
@@ -386,6 +396,7 @@ public class SwiftySoundRecorder: UIViewController {
         case .Playing:
             print("playing...")
             _loadAudioSiriWaveView()
+            undoTrimmingButton.hidden = true
             playButton.hidden = false
             stopButton.hidden = true
             scissorButton.enabled = true
@@ -393,6 +404,8 @@ public class SwiftySoundRecorder: UIViewController {
         case .Cropping:
             print("Cropping....")
             _loadWaveFormView()
+            undoTrimmingButton.hidden = false
+            undoTrimmingButton.enabled = true
             scissorButton.enabled = true
 //            playButton.enabled = false
             playButton.setBackgroundImage(playIcon, forState: .Normal) // restore the play icon
@@ -558,10 +571,10 @@ public class SwiftySoundRecorder: UIViewController {
         return button
     }()
     
-    let scissorIcon = UIImage(named: "scissor") // ?.imageWithRenderingMode(.AlwaysTemplate)
+    let scissorIcon = UIImage(named: "ic_content_cut")?.imageWithRenderingMode(.AlwaysTemplate)
     private lazy var scissorButton: UIButton = {
         let button = UIButton(type: .Custom)
-        button.frame = CGRect(x: self.view.bounds.width - 40, y: 5, width: 30, height: 30)
+//        button.frame = CGRect(x: self.view.bounds.width - 40, y: 5, width: 30, height: 30)
         button.tintColor = self.view.tintColor
         button.enabled = false
         button.setTitleColor(self.view.tintColor, forState: .Normal)
@@ -571,6 +584,21 @@ public class SwiftySoundRecorder: UIViewController {
         button.contentMode = .ScaleAspectFit
         button.addTarget(self, action: #selector(self.beginAudioCropMode), forControlEvents: .TouchUpInside) // TODO:
         
+        return button
+    }()
+    
+    let undoIcon = UIImage(named: "ic_undo")?.imageWithRenderingMode(.AlwaysTemplate)
+    private lazy var undoTrimmingButton: UIButton = {
+        let button = UIButton(type: .Custom)
+        //        button.frame = CGRect(x: self.view.bounds.width - 40, y: 5, width: 30, height: 30)
+        button.tintColor = self.view.tintColor
+        button.enabled = false
+        button.setTitleColor(self.view.tintColor, forState: .Normal)
+        button.setTitleColor(UIColor.grayColor(), forState: .Highlighted)
+        
+        button.setBackgroundImage(self.undoIcon, forState: .Normal)
+        button.contentMode = .ScaleAspectFit
+//        button.addTarget(self, action: #selector(self.undoTrimming), forControlEvents: .TouchUpInside) // TODO:
         return button
     }()
     
@@ -607,7 +635,6 @@ public class SwiftySoundRecorder: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
     
     private lazy var loadingActivityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)

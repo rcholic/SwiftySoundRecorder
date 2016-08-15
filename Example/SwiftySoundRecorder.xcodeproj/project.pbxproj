@@ -44,6 +44,12 @@
 		EB6B48D71D61205C00622AD9 /* scissor.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48BE1D61205C00622AD9 /* scissor.png */; };
 		EB6B48D81D61205C00622AD9 /* scissor@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48BF1D61205C00622AD9 /* scissor@2x.png */; };
 		EB6B48D91D61205C00622AD9 /* scissor@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48C01D61205C00622AD9 /* scissor@3x.png */; };
+		EB6B48DE1D61526300622AD9 /* ic_content_cut_2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48DB1D61526300622AD9 /* ic_content_cut_2x.png */; };
+		EB6B48DF1D61526300622AD9 /* ic_content_cut_3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48DC1D61526300622AD9 /* ic_content_cut_3x.png */; };
+		EB6B48E01D61526300622AD9 /* ic_content_cut.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48DD1D61526300622AD9 /* ic_content_cut.png */; };
+		EB6B48E41D6152E900622AD9 /* ic_undo_2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48E11D6152E900622AD9 /* ic_undo_2x.png */; };
+		EB6B48E51D6152E900622AD9 /* ic_undo_3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48E21D6152E900622AD9 /* ic_undo_3x.png */; };
+		EB6B48E61D6152E900622AD9 /* ic_undo.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48E31D6152E900622AD9 /* ic_undo.png */; };
 		EBDC6A711D5FF36500404F68 /* Source in Resources */ = {isa = PBXBuildFile; fileRef = EBDC6A701D5FF36500404F68 /* Source */; };
 		EBDC6A751D5FF5F700404F68 /* Number+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBDC6A741D5FF5F700404F68 /* Number+String.swift */; };
 		EBDC6A771D5FF78900404F68 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBDC6A761D5FF78900404F68 /* Configuration.swift */; };
@@ -112,6 +118,12 @@
 		EB6B48BE1D61205C00622AD9 /* scissor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = scissor.png; path = Images/scissor.png; sourceTree = "<group>"; };
 		EB6B48BF1D61205C00622AD9 /* scissor@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "scissor@2x.png"; path = "Images/scissor@2x.png"; sourceTree = "<group>"; };
 		EB6B48C01D61205C00622AD9 /* scissor@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "scissor@3x.png"; path = "Images/scissor@3x.png"; sourceTree = "<group>"; };
+		EB6B48DB1D61526300622AD9 /* ic_content_cut_2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_content_cut_2x.png; path = Images/ic_content_cut_2x.png; sourceTree = "<group>"; };
+		EB6B48DC1D61526300622AD9 /* ic_content_cut_3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_content_cut_3x.png; path = Images/ic_content_cut_3x.png; sourceTree = "<group>"; };
+		EB6B48DD1D61526300622AD9 /* ic_content_cut.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_content_cut.png; path = Images/ic_content_cut.png; sourceTree = "<group>"; };
+		EB6B48E11D6152E900622AD9 /* ic_undo_2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_undo_2x.png; path = Images/ic_undo_2x.png; sourceTree = "<group>"; };
+		EB6B48E21D6152E900622AD9 /* ic_undo_3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_undo_3x.png; path = Images/ic_undo_3x.png; sourceTree = "<group>"; };
+		EB6B48E31D6152E900622AD9 /* ic_undo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_undo.png; path = Images/ic_undo.png; sourceTree = "<group>"; };
 		EBDC6A6F1D5FF35400404F68 /* Images */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Images; sourceTree = "<group>"; };
 		EBDC6A701D5FF36500404F68 /* Source */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Source; sourceTree = "<group>"; };
 		EBDC6A741D5FF5F700404F68 /* Number+String.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Number+String.swift"; sourceTree = "<group>"; };
@@ -238,6 +250,12 @@
 		EB6B48DA1D61206500622AD9 /* icons */ = {
 			isa = PBXGroup;
 			children = (
+				EB6B48E11D6152E900622AD9 /* ic_undo_2x.png */,
+				EB6B48E21D6152E900622AD9 /* ic_undo_3x.png */,
+				EB6B48E31D6152E900622AD9 /* ic_undo.png */,
+				EB6B48DB1D61526300622AD9 /* ic_content_cut_2x.png */,
+				EB6B48DC1D61526300622AD9 /* ic_content_cut_3x.png */,
+				EB6B48DD1D61526300622AD9 /* ic_content_cut.png */,
 				EB6B48A81D61205C00622AD9 /* ic_av_timer_2x.png */,
 				EB6B48A91D61205C00622AD9 /* ic_av_timer_3x.png */,
 				EB6B48AA1D61205C00622AD9 /* ic_av_timer.png */,
@@ -368,7 +386,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB6B48CF1D61205C00622AD9 /* ic_pause.png in Resources */,
+				EB6B48DE1D61526300622AD9 /* ic_content_cut_2x.png in Resources */,
 				EB6B48C61D61205C00622AD9 /* ic_fiber_manual_record.png in Resources */,
+				EB6B48DF1D61526300622AD9 /* ic_content_cut_3x.png in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				EB6B48D41D61205C00622AD9 /* ic_stop_3x.png in Resources */,
 				EBDC6A7D1D5FFDE400404F68 /* milkyway.jpg in Resources */,
@@ -382,17 +402,21 @@
 				EB6B48CD1D61205C00622AD9 /* ic_pause_2x.png in Resources */,
 				EB6B48C81D61205C00622AD9 /* ic_mic_3x.png in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
+				EB6B48E51D6152E900622AD9 /* ic_undo_3x.png in Resources */,
 				EB6B48C31D61205C00622AD9 /* ic_av_timer.png in Resources */,
 				EB6B48D91D61205C00622AD9 /* scissor@3x.png in Resources */,
 				EB6B48CA1D61205C00622AD9 /* ic_mic_off_3x.png in Resources */,
 				EB6B48D71D61205C00622AD9 /* scissor.png in Resources */,
+				EB6B48E01D61526300622AD9 /* ic_content_cut.png in Resources */,
 				EB6B48C11D61205C00622AD9 /* ic_av_timer_2x.png in Resources */,
 				EB6B48C21D61205C00622AD9 /* ic_av_timer_3x.png in Resources */,
 				EB6B48C91D61205C00622AD9 /* ic_mic_off_2x.png in Resources */,
 				EB6B48D51D61205C00622AD9 /* ic_stop.png in Resources */,
 				EB6B48C41D61205C00622AD9 /* ic_fiber_manual_record_2x.png in Resources */,
+				EB6B48E41D6152E900622AD9 /* ic_undo_2x.png in Resources */,
 				EB6B48D31D61205C00622AD9 /* ic_stop_2x.png in Resources */,
 				EB6B48D21D61205C00622AD9 /* ic_play_arrow.png in Resources */,
+				EB6B48E61D6152E900622AD9 /* ic_undo.png in Resources */,
 				EBDC6A711D5FF36500404F68 /* Source in Resources */,
 				EB6B48D61D61205C00622AD9 /* milkyway.jpg in Resources */,
 				EB6B48CB1D61205C00622AD9 /* ic_mic_off.png in Resources */,
