@@ -51,19 +51,18 @@ public class SwiftySoundRecorder: UIViewController {
     private var rightPanGesture: UIPanGestureRecognizer!
     private var _operationMode: SwiftySoundMode = .Idling
     
-    private var operationMode: SwiftySoundMode {
-        set {
+    private var operationMode: SwiftySoundMode = .Idling {
+        willSet(newValue) {
+            if _operationMode != newValue {
+                print("updating UI now")
+                self.updateUIForOperation(newValue)
+            }
             _operationMode = newValue
-            self.changeUIForOperation(newValue)
-        }
-        get {
-            return _operationMode
         }
     }
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        print("audioFileType: \(audioFileType)")
         curAudioPathStr = nil
         operationMode = .Idling
         setupUI()
@@ -183,21 +182,25 @@ public class SwiftySoundRecorder: UIViewController {
     }
     
     @objc private func audioTimerCallback() {
+        var remainingTime: NSTimeInterval = 0
         if self.operationMode == .Playing && audioPlayer != nil {
             audioPlayer!.updateMeters()
-            audioDuration += waveUpdateInterval // always count up for player
+            remainingTime = audioPlayer!.currentTime // count up for playing
             audioSiriWaveView.updateWithLevel(CGFloat(pow(10, audioPlayer!.averagePowerForChannel(0)/20)))
             
         } else if self.operationMode == .Recording && audioRecorder != nil {
             audioRecorder!.updateMeters()
             if maxDuration > 0 {
-                audioDuration -= waveUpdateInterval // count down for maxDuration
+
+                remainingTime = NSTimeInterval(maxDuration) - audioRecorder!.currentTime  // count down for recording if maxDuration is set
+
                 if audioRecorder!.currentTime >= NSTimeInterval(maxDuration) {
                     self.stopRecording(nil)
-                } else {
-                    // TODO: give warning when remaining time is 5 sec or less
-                    if Int(audioDuration) % 2 == 1 {
-                        // TODO: flash every half second rather than 1 sec
+                } else if (remainingTime <= 6) {
+                    print("remaining: \(remainingTime)")
+                    // Give warning when the remaining time is 6 sec or less
+                    if Int(remainingTime) % 2 == 1 {
+                        // TODO: flash the color every half second rather than 1 sec
                         clockIcon.tintColor = UIColor.redColor()
                         timeLabel.textColor = UIColor.redColor()
                     } else {
@@ -206,13 +209,12 @@ public class SwiftySoundRecorder: UIViewController {
                     }
                 }
             } else {
-                audioDuration += waveUpdateInterval // count up
+                remainingTime = audioRecorder!.currentTime // count up
             }
             
             audioSiriWaveView.updateWithLevel(CGFloat(pow(10, audioRecorder!.averagePowerForChannel(0)/20)))
         }
-        _updateTimeLabel(audioDuration)
-        // TODO: update the time label
+        _updateTimeLabel(remainingTime + 0.15)
     }
     
     @objc private func didTapDoneButton(sender: UIButton) {
@@ -370,13 +372,13 @@ public class SwiftySoundRecorder: UIViewController {
 //        }
     }
     
-    private func changeUIForOperation(mode: SwiftySoundMode) {
+    private func updateUIForOperation(mode: SwiftySoundMode) {
         switch mode {
         case .Idling:
             undoTrimmingButton.hidden = true
             scissorButton.enabled = curAudioPathStr != nil
-            stopButton.hidden = curAudioPathStr != nil
-            stopButton.enabled = stopButton.hidden
+//            stopButton.hidden = curAudioPathStr != nil
+//            stopButton.enabled = stopButton.hidden
             playButton.hidden = !stopButton.hidden // alternate playButton and stopButton (for recording)
             playButton.enabled = !playButton.hidden
             micButton.enabled = true
@@ -595,10 +597,10 @@ public class SwiftySoundRecorder: UIViewController {
         button.enabled = false
         button.setTitleColor(self.view.tintColor, forState: .Normal)
         button.setTitleColor(UIColor.grayColor(), forState: .Highlighted)
-        
+        button.hidden = true // TODO: work on this undo button in next release; hidden temporarily
         button.setBackgroundImage(self.undoIcon, forState: .Normal)
         button.contentMode = .ScaleAspectFit
-//        button.addTarget(self, action: #selector(self.undoTrimming), forControlEvents: .TouchUpInside) // TODO:
+//        button.addTarget(self, action: #selector(self.undoTrimming), forControlEvents: .TouchUpInside)
         return button
     }()
     
@@ -609,13 +611,13 @@ public class SwiftySoundRecorder: UIViewController {
     }()
     
     private lazy var originalRecordedAudioURL: NSURL = {
-        let fileUrl = self.docDirectoryPath.URLByAppendingPathComponent(Configuration.originalRecordingFileName)
+        let fileUrl = self.docDirectoryPath.URLByAppendingPathComponent("\(Configuration.originalRecordingFileName)\(self.audioFileType)")
         
         return fileUrl
     }()
     
     private lazy var trimmedAudioURL: NSURL = {
-        let fileUrl = self.docDirectoryPath.URLByAppendingPathComponent(Configuration.trimmedRecordingFileName)
+        let fileUrl = self.docDirectoryPath.URLByAppendingPathComponent("\(Configuration.trimmedRecordingFileName)\(self.audioFileType)")
         
         return fileUrl
     }()
@@ -783,13 +785,18 @@ extension SwiftySoundRecorder: AVAudioRecorderDelegate {
         //        audioDuration = floor(recorder.currentTime / 60)
         curAudioPathStr = recorder.url.path
         audioTimer.invalidate()
-        self.operationMode = .Idling
+        
         audioRecorder = nil
         micButton.setBackgroundImage(micIcon, forState: .Normal)
         
-//        stopButton.hidden = true
-//        playButton.hidden = false
-        print("finished recording: duration: \(recorder.currentTime)")
+        // The UI updates in .Idling state cannot update due to the lag of calling this delegate method! // TODO: find a solution for consistent use of the updateUI() method above
+        // so that the UI does not
+        stopButton.hidden = true
+//        stopButton.enabled = false
+        playButton.hidden = false // alternate playButton and stopButton (for recording)
+        playButton.enabled = true
+        
+        self.operationMode = .Idling
     }
 }
 
