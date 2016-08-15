@@ -21,6 +21,7 @@ class ViewController: UIViewController {
     @IBAction func didTapRecordButton(sender: AnyObject) {
         
         let recordRC = SwiftySoundRecorder()
+        recordRC.maxDuration = 7
         recordRC.delegate = self
         presentViewController(recordRC, animated: true, completion: nil)
     }
@@ -29,10 +30,12 @@ class ViewController: UIViewController {
 extension ViewController: SwiftySoundRecorderDelegate {
     func doneRecordingDidPress(soundRecorder: SwiftySoundRecorder, audioFilePath: String) {
         print("done recording button tapped")
+        soundRecorder.dismissViewControllerAnimated(true, completion: nil)
     }
     
     func cancelRecordingDidPress(soundRecorder: SwiftySoundRecorder) {
         print("cancelled!")
+        soundRecorder.dismissViewControllerAnimated(true, completion: nil)
     }
 }
 
