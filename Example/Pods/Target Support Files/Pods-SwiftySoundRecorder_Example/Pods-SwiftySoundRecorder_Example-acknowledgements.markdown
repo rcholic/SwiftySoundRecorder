@@ -1,7 +1,7 @@
 # Acknowledgements
 This application makes use of the following third party libraries:
 
-## FDWaveformView
+## FDWaveformViewForked
 
 Copyright (c) 2015 William Entriken <github.com@phor.net>
 

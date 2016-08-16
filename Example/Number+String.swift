@@ -17,6 +17,9 @@ extension Int {
 extension Double {
     
     func stripDecimalZeroAsString() -> String? {
+        if self > 0 {
+            return nil
+        }
         let formatter = NSNumberFormatter()
         formatter.positiveFormat = ".###" // decimal without decimal 0
         
