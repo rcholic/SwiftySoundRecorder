@@ -1,0 +1,6 @@
+framework module FDWaveformViewForked {
+  umbrella header "FDWaveformViewForked-umbrella.h"
+
+  export *
+  module * { export * }
+}
