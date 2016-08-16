@@ -99,8 +99,8 @@ public class SwiftySoundRecorder: UIViewController {
                 print("error in creating audio player: \(error)")
             }
         }
-//        audioDuration = audioPlayer!.duration
         print("preparing to play! duration: \(audioPlayer!.duration)")
+        audioDuration = audioPlayer!.duration // update the audioDuration
         audioPlayer!.meteringEnabled = true
         audioPlayer!.delegate = self
         audioPlayer!.rate = 1.0
@@ -187,6 +187,7 @@ public class SwiftySoundRecorder: UIViewController {
             runOnMainQueue(callback: {
                 self.audioWaveContainerView.addSubview(self.leftCropper)
                 self.audioWaveContainerView.addSubview(self.rightCropper)
+                self.rightCropper.cropTime = CGFloat(self.audioDuration)
             })
         }
         // position the croppers
@@ -196,7 +197,7 @@ public class SwiftySoundRecorder: UIViewController {
             
             self.audioWaveContainerView.bringSubviewToFront(self.leftCropper)
             self.audioWaveContainerView.bringSubviewToFront(self.rightCropper)
-            UIView.animateWithDuration(2.5, animations: {
+            UIView.animateWithDuration(3.0, animations: {
                 self.leftCropper.alpha = 1.0
                 self.rightCropper.alpha = 1.0
             })
@@ -397,6 +398,7 @@ public class SwiftySoundRecorder: UIViewController {
         case .Idling:
             undoTrimmingButton.hidden = true
             scissorButton.enabled = curAudioPathStr != nil
+            scissorButton.tintColor = self.view.tintColor
 //            stopButton.hidden = curAudioPathStr != nil
 //            stopButton.enabled = stopButton.hidden
             playButton.hidden = !stopButton.hidden // alternate playButton and stopButton (for recording)
@@ -416,6 +418,7 @@ public class SwiftySoundRecorder: UIViewController {
             playButton.hidden = true
             stopButton.enabled = true
             scissorButton.enabled = false
+            scissorButton.tintColor = self.view.tintColor
             doneButton.enabled = false
 //            cancelButton.enabled = false
             
@@ -428,6 +431,7 @@ public class SwiftySoundRecorder: UIViewController {
             playButton.hidden = false
             stopButton.hidden = true
             scissorButton.enabled = true
+            scissorButton.tintColor = self.view.tintColor
             micButton.enabled = false
             doneButton.enabled = curAudioPathStr != nil
             
@@ -436,10 +440,11 @@ public class SwiftySoundRecorder: UIViewController {
         case .Cropping:
             print("Cropping....")
             _loadWaveFormView()
-            _loadCroppers()
+            
 //            undoTrimmingButton.hidden = true // TODO: change to false in next release
 //            undoTrimmingButton.enabled = true
             scissorButton.enabled = true
+            scissorButton.tintColor = self.view.tintColor
 //            playButton.enabled = false
             playButton.setBackgroundImage(playIcon, forState: .Normal) // restore the play icon
             stopButton.enabled = false
@@ -479,7 +484,7 @@ public class SwiftySoundRecorder: UIViewController {
                 try! fileManager.removeItemAtURL(trimmedAudioURL)
             }
             
-            exportSession.outputURL = NSURL(fileURLWithPath: trimmedAudioURL.path!) //
+            exportSession.outputURL = NSURL(fileURLWithPath: trimmedAudioURL.path!)
             exportSession.outputFileType = AVFileTypeAppleM4A
             exportSession.timeRange = exportTimeRange
             exportSession.audioMix = exportAudioMix
@@ -496,10 +501,11 @@ public class SwiftySoundRecorder: UIViewController {
                     
                 case AVAssetExportSessionStatus.Failed:
                     print("audio trimming failed!")
-                    NSOperationQueue.mainQueue().addOperationWithBlock({
+                    
+                    self.runOnMainQueue(callback: { 
                         if exportSession.status == AVAssetExportSessionStatus.Completed {
                             let uniqueStr = NSProcessInfo.processInfo().globallyUniqueString
-                            let newAudioUrl = self.docDirectoryPath.URLByAppendingPathComponent("\(String(uniqueStr)).m4a")
+                            let newAudioUrl = self.docDirectoryPath.URLByAppendingPathComponent("\(String(uniqueStr)).\(self.audioFileType)")
                             //                        self.audioUrl = NSURL(fileURLWithPath: newFilePath.path!)
                             try! self.fileManager.moveItemAtURL(exportSession.outputURL!, toURL: newAudioUrl)
                             self.curAudioPathStr = newAudioUrl.path
@@ -789,8 +795,50 @@ extension SwiftySoundRecorder: SwiftySoundRecorderDelegate {
 extension SwiftySoundRecorder {
     
     @objc func didMoveLeftCropper(panRecognizer: UIPanGestureRecognizer) {
-        // TODO:
         print("did move left cropper")
+        
+        var panBeginPoint: CGPoint = CGPointZero // panRecognizer.translationInView(audioWaveContainerView) // leftCropper.frame.origin
+        var beginCenter: CGPoint = CGPointZero
+        //        var curPanPoint = CGPointZero // current pan point
+        switch panRecognizer.state {
+        case UIGestureRecognizerState.Began:
+            panBeginPoint = panRecognizer.translationInView(audioWaveContainerView)
+            beginCenter = leftCropper.center
+            // TODO: Invocation
+            audioPlayer?.stop() // make sure stopped
+            audioRecorder?.stop()
+            
+        case UIGestureRecognizerState.Changed:
+            
+            let curPanPoint = panRecognizer.translationInView(audioWaveContainerView)
+            // Left Margin
+            var pointX: CGFloat = max(waveFormView.frame.minX, beginCenter.x + curPanPoint.x - panBeginPoint.x)
+            pointX = min(rightCropper.frame.minX, pointX)
+            leftCropper.center = CGPointMake(pointX, beginCenter.y + leftCropper.bounds.height / 2) // + 1/2 height ?
+            
+            // TODO: update crop time label
+            let leftPercentage = CGFloat((leftCropper.center.x - (leftCropper.frame.width / 2)) / waveFormView.frame.size.width)
+            let curPlayerDuration = audioPlayer?.duration ?? audioDuration // buggy ! cannot convert float to Int sometimes!
+            leftCropper.cropTime = leftPercentage * CGFloat(curPlayerDuration)
+            audioPlayer?.currentTime = NSTimeInterval(leftCropper.cropTime) // let audioPlayer start playing from the left cropper's position
+            let curPlayedPercentage: Double = (audioPlayer?.currentTime ?? 0) / curPlayerDuration
+            print("leftPercentage: \(leftPercentage), curPlayerDuration: \(curPlayerDuration), curPlayedPercentage: \(curPlayedPercentage)")
+            waveFormView.progressSamples = Int(Double(waveFormView.totalSamples) * curPlayedPercentage)
+            
+            if leftCropper.cropTime > 0 {
+                isCroppingEnabled = true
+                scissorButton.tintColor = UIColor.redColor()
+            } else {
+                isCroppingEnabled = false
+                scissorButton.tintColor = self.view.tintColor
+            }
+            
+            
+        default:
+            // Ended as default
+            panBeginPoint = CGPointZero
+            beginCenter = CGPointZero
+        }
     }
     
     @objc func didMoveRightCropper(panRecognizer: UIPanGestureRecognizer) {
@@ -801,6 +849,8 @@ extension SwiftySoundRecorder {
 
 extension SwiftySoundRecorder: AVAudioPlayerDelegate {
     public func audioPlayerDidFinishPlaying(player: AVAudioPlayer, successfully flag: Bool) {
+        audioDuration = audioPlayer!.duration
+        print("recorded audio duration: \(audioDuration) after playing")
         audioTimer.invalidate()
         playButton.setBackgroundImage(self.playIcon, forState: .Normal)
         audioPlayer = nil
@@ -867,7 +917,6 @@ extension SwiftySoundRecorder: FDWaveformViewDelegate {
                 self._toggleActivityIndicator(toShow: true)
             })
         }
-
     }
     
     public func waveformViewDidRender(waveformView: FDWaveformView!) {
@@ -877,6 +926,8 @@ extension SwiftySoundRecorder: FDWaveformViewDelegate {
             self.audioWaveContainerView.alpha = 1.0
             self._toggleActivityIndicator(toShow: false)
             self.waveFormView.hidden = false
+            
+            self._loadCroppers()
         }
     }
     
