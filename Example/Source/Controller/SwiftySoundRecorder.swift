@@ -70,7 +70,7 @@ public class SwiftySoundRecorder: UIViewController {
     
     override public func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-
+        
         statusBarHidden = UIApplication.sharedApplication().statusBarHidden
         UIApplication.sharedApplication().setStatusBarHidden(statusBarHidden, withAnimation: .Fade)
     }
@@ -181,6 +181,28 @@ public class SwiftySoundRecorder: UIViewController {
         }
     }
     
+    private func _loadCroppers() {
+        if !audioWaveContainerView.subviews.contains(leftCropper) {
+            
+            runOnMainQueue(callback: {
+                self.audioWaveContainerView.addSubview(self.leftCropper)
+                self.audioWaveContainerView.addSubview(self.rightCropper)
+            })
+        }
+        // position the croppers
+        runOnMainQueue { 
+            self.leftCropper.frame = CGRectMake(0, 0, 30, self.audioWaveContainerView.bounds.height)
+            self.rightCropper.frame = CGRect(x: self.audioWaveContainerView.bounds.width - 30, y: 0, width: 30, height: self.audioWaveContainerView.bounds.height)
+            
+            self.audioWaveContainerView.bringSubviewToFront(self.leftCropper)
+            self.audioWaveContainerView.bringSubviewToFront(self.rightCropper)
+            UIView.animateWithDuration(2.5, animations: {
+                self.leftCropper.alpha = 1.0
+                self.rightCropper.alpha = 1.0
+            })
+        }
+    }
+    
     @objc private func audioTimerCallback() {
         var remainingTime: NSTimeInterval = 0
         if self.operationMode == .Playing && audioPlayer != nil {
@@ -197,7 +219,6 @@ public class SwiftySoundRecorder: UIViewController {
                 if audioRecorder!.currentTime >= NSTimeInterval(maxDuration) {
                     self.stopRecording(nil)
                 } else if (remainingTime <= 6) {
-                    print("remaining: \(remainingTime)")
                     // Give warning when the remaining time is 6 sec or less
                     if Int(remainingTime) % 2 == 1 {
                         // TODO: flash the color every half second rather than 1 sec
@@ -326,8 +347,7 @@ public class SwiftySoundRecorder: UIViewController {
         bottomNavBar.snp_makeConstraints { (make) in
             make.width.equalTo(self.view.bounds.width)
             make.height.equalTo(navbarHeight)
-            make.left.right.equalTo(self.view)
-            make.bottom.equalTo(self.view)
+            make.left.right.bottom.equalTo(self.view)
         }
         bottomNavBar.addSubview(micButton) // TODO: toggle recording also toggles the record/pause icon here!
 //        micButton.tintColor = UIColor.whiteColor()
@@ -382,9 +402,12 @@ public class SwiftySoundRecorder: UIViewController {
             playButton.hidden = !stopButton.hidden // alternate playButton and stopButton (for recording)
             playButton.enabled = !playButton.hidden
             micButton.enabled = true
-            doneButton.enabled = curAudioPathStr != nil
+//            doneButton.enabled = curAudioPathStr != nil
             clockIcon.tintColor = UIColor(white: 1, alpha: 0.9) // restore the original tint
             timeLabel.textColor = UIColor(white: 1, alpha: 0.9) // restore the original tint
+            
+            leftCropper.alpha = 0
+            rightCropper.alpha = 0
         
         case .Recording:
             print("recording")
@@ -395,6 +418,9 @@ public class SwiftySoundRecorder: UIViewController {
             scissorButton.enabled = false
             doneButton.enabled = false
 //            cancelButton.enabled = false
+            
+            leftCropper.alpha = 0
+            rightCropper.alpha = 0
         case .Playing:
             print("playing...")
             _loadAudioSiriWaveView()
@@ -403,11 +429,16 @@ public class SwiftySoundRecorder: UIViewController {
             stopButton.hidden = true
             scissorButton.enabled = true
             micButton.enabled = false
+            doneButton.enabled = curAudioPathStr != nil
+            
+            leftCropper.alpha = 0
+            rightCropper.alpha = 0
         case .Cropping:
             print("Cropping....")
             _loadWaveFormView()
-            undoTrimmingButton.hidden = false
-            undoTrimmingButton.enabled = true
+            _loadCroppers()
+//            undoTrimmingButton.hidden = true // TODO: change to false in next release
+//            undoTrimmingButton.enabled = true
             scissorButton.enabled = true
 //            playButton.enabled = false
             playButton.setBackgroundImage(playIcon, forState: .Normal) // restore the play icon
@@ -624,6 +655,7 @@ public class SwiftySoundRecorder: UIViewController {
     
     private lazy var audioWaveContainerView: UIView = {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 200)) // self.view.bounds.height - self.navBar.bounds.height - self.bottomToolbar.bounds.height
+//        view.translatesAutoresizingMaskIntoConstraints = false
         view.clipsToBounds = true
         view.backgroundColor = UIColor.clearColor() // UIColor.whiteColor()
         view.center = self.view.center
@@ -666,6 +698,7 @@ public class SwiftySoundRecorder: UIViewController {
     
     private lazy var waveFormView: FDWaveformView = {
         let formView = FDWaveformView()
+        formView.translatesAutoresizingMaskIntoConstraints = false
         formView.backgroundColor = UIColor.grayColor()
         formView.frame = self.audioWaveContainerView.bounds
         formView.hidden = true
@@ -692,16 +725,20 @@ public class SwiftySoundRecorder: UIViewController {
     
     private lazy var leftCropper: Cropper = {
         let cropper = Cropper(cropperType: .Left, lineThickness: 3, lineColor: UIColor.redColor())
+        cropper.translatesAutoresizingMaskIntoConstraints = false
+//        cropper.frame = CGRectMake(0, 0, 30, self.audioWaveContainerView.bounds.height)
         cropper.addGestureRecognizer(self.leftPanGesture)
-        cropper.hidden = true
+        cropper.alpha = 0
         
         return cropper
     }()
     
     private lazy var rightCropper: Cropper = {
         let cropper = Cropper(cropperType: .Right, lineThickness: 3, lineColor: UIColor.redColor())
+//        cropper.frame = CGRect(x: self.audioWaveContainerView.bounds.width - 30, y: 0, width: 30, height: self.audioWaveContainerView.bounds.height)
+        cropper.translatesAutoresizingMaskIntoConstraints = false
         cropper.addGestureRecognizer(self.rightPanGesture)
-        cropper.hidden = true
+        cropper.alpha = 0
         
         return cropper
     }()
@@ -764,7 +801,6 @@ extension SwiftySoundRecorder {
 
 extension SwiftySoundRecorder: AVAudioPlayerDelegate {
     public func audioPlayerDidFinishPlaying(player: AVAudioPlayer, successfully flag: Bool) {
-        print("audio player finished playing! succssfully? \(flag)")
         audioTimer.invalidate()
         playButton.setBackgroundImage(self.playIcon, forState: .Normal)
         audioPlayer = nil
@@ -795,41 +831,51 @@ extension SwiftySoundRecorder: AVAudioRecorderDelegate {
 //        stopButton.enabled = false
         playButton.hidden = false // alternate playButton and stopButton (for recording)
         playButton.enabled = true
+        doneButton.enabled = curAudioPathStr != nil
         
         self.operationMode = .Idling
+    }
+    
+    private func _toggleActivityIndicator(toShow isToBeShown: Bool) {
+        if isToBeShown {
+            
+            self.loadingActivityIndicator.superview!.bringSubviewToFront(self.loadingActivityIndicator)
+            self.loadingActivityIndicator.hidden = false
+            self.loadingActivityIndicator.startAnimating()
+        } else {
+            self.loadingActivityIndicator.stopAnimating()
+            //            self.loadingActivityIndicator.removeFromSuperview()
+            self.loadingActivityIndicator.hidden = true
+        }
+    }
+    
+    // MARK: execute the block callback on the main thread
+    private func runOnMainQueue(callback blockFunc: () -> Void) {
+        NSOperationQueue.mainQueue().addOperationWithBlock {
+            blockFunc()
+        }
     }
 }
 
 extension SwiftySoundRecorder: FDWaveformViewDelegate {
     public func waveformViewWillRender(waveformView: FDWaveformView!) {
-        
-        self.audioWaveContainerView.alpha = 0.0
-        self.waveFormView.hidden = true
-        
-        leftCropper.frame = CGRectMake(0, 0, 30, audioWaveContainerView.bounds.height)
-        leftCropper.cropTime = 0
-        rightCropper.cropTime = CGFloat(self.audioDuration)
-        
-        rightCropper.frame = CGRect(x: audioWaveContainerView.bounds.width - 30, y: 0, width: 30, height: audioWaveContainerView.bounds.height)
-        
-        self.audioWaveContainerView.alpha = 0.0
-        self.waveFormView.hidden = true
-        self.loadingActivityIndicator.superview!.bringSubviewToFront(loadingActivityIndicator)
-        
-        self.loadingActivityIndicator.hidden = false
-        self.loadingActivityIndicator.startAnimating()
+       
+        runOnMainQueue { 
+            UIView.animateWithDuration(0.5, animations: {
+                self.audioWaveContainerView.alpha = 0.0
+                self.waveFormView.hidden = true
+                self._toggleActivityIndicator(toShow: true)
+            })
+        }
+
     }
     
     public func waveformViewDidRender(waveformView: FDWaveformView!) {
         print("wave form did render, waveFormView.totalSamples: \(waveFormView.totalSamples)")
         
-        self.leftCropper.hidden = false
-        self.rightCropper.hidden = false
-        UIView.animateWithDuration(2) {
+        UIView.animateWithDuration(3) {
             self.audioWaveContainerView.alpha = 1.0
-            self.loadingActivityIndicator.stopAnimating()
-            self.loadingActivityIndicator.hidden = true
-//            self.loadingActivityIndicator.removeFromSuperview()
+            self._toggleActivityIndicator(toShow: false)
             self.waveFormView.hidden = false
         }
     }
