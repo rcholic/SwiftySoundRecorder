@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'SwiftySoundRecorder'
-  s.version          = '0.0.4'
+  s.version          = '0.0.5'
   s.summary          = 'A Swift ySound Recorder with Sound Wave Views.'
   s.homepage         = 'https://github.com/rcholic/SwiftySoundRecorder'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
