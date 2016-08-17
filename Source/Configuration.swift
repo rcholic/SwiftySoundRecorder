@@ -42,5 +42,5 @@ public struct Configuration {
     
     
     // MARK images
-    public static var milkyWayImage: UIImage = UIImage(named: "milkyway.jpg")!
+    public static var milkyWayImage: UIImage = AssetManager.getImage("milkyway.jpg") // UIImage(named: "milkyway.jpg")
 }
