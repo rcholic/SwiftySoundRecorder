@@ -89,7 +89,7 @@ public class SwiftySoundRecorder: UIViewController {
         // TODO: clean up unwanted recordings
     }
     
-    @objc private func playRecording(sender: AnyObject?) {
+    @objc private func togglePlayRecording(sender: AnyObject?) {
         
         guard let pathStr = curAudioPathStr else {return}
         let audioFileUrl = NSURL(string: pathStr)!
@@ -99,33 +99,43 @@ public class SwiftySoundRecorder: UIViewController {
                 try audioPlayer = AVAudioPlayer(contentsOfURL: audioFileUrl, fileTypeHint: audioFileType)
                 audioPlayer!.delegate = self
                 audioPlayer!.rate = 1.0
+                audioPlayer!.prepareToPlay()
             } catch let error {
                 print("error in creating audio player: \(error)")
             }
         }
-        
         audioDuration = audioPlayer!.duration
-        audioPlayer!.prepareToPlay()
-
-        if operationMode == .Cropping && audioPlayer!.currentTime <= NSTimeInterval(leftCropper.cropTime) {
-            // always play from the crop time in Cropping mode
-            audioPlayer!.currentTime = NSTimeInterval(leftCropper.cropTime)
-            
-        } else {
-            operationMode = .Playing
-            audioPlayer!.meteringEnabled = true
+        
+        // MARK: internal functions for playing and pausing player
+        func __playNow() {
+            audioPlayer!.play()
+            playButton.setBackgroundImage(self.pauseIcon, forState: .Normal)
         }
         
-        if audioPlayer!.playing {
+        func __pauseNow() {
             audioPlayer!.pause()
             audioTimer.invalidate()
             playButton.setBackgroundImage(self.playIcon, forState: .Normal)
-        } else {
-            if operationMode == .Playing {
-                audioTimer = NSTimer.scheduledTimerWithTimeInterval(waveUpdateInterval, target: self, selector: #selector(self.audioTimerCallback), userInfo: nil, repeats: true)
+        }
+        
+        if operationMode == .Cropping && audioPlayer!.playing {
+            __pauseNow()
+        } else if operationMode == .Cropping && !audioPlayer!.playing {
+            if audioPlayer!.currentTime <= NSTimeInterval(leftCropper.cropTime) {
+                // always play from the crop time in Cropping mode
+                audioPlayer!.currentTime = NSTimeInterval(leftCropper.cropTime)
             }
-            audioPlayer!.play()
-            playButton.setBackgroundImage(self.pauseIcon, forState: .Normal)
+            __playNow()
+        } else {
+            operationMode = .Playing
+            audioPlayer!.meteringEnabled = true
+            
+            if audioPlayer!.playing {
+                __pauseNow()
+            } else {
+                audioTimer = NSTimer.scheduledTimerWithTimeInterval(waveUpdateInterval, target: self, selector: #selector(self.audioTimerCallback), userInfo: nil, repeats: true)
+                __playNow()
+            }
         }
     }
     
@@ -576,7 +586,7 @@ public class SwiftySoundRecorder: UIViewController {
         button.tintColor = self.view.tintColor
         button.setTitleColor(UIColor.redColor(), forState: .Highlighted) // ???
         button.contentMode = .ScaleAspectFit
-        button.addTarget(self, action: #selector(self.playRecording), forControlEvents: .TouchUpInside)
+        button.addTarget(self, action: #selector(self.togglePlayRecording), forControlEvents: .TouchUpInside)
         
         return button
     }()
