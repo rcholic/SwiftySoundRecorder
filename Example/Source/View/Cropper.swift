@@ -15,27 +15,23 @@ internal enum CropperType {
 }
 
 public class Cropper: UIView {
-    public var cropTime: CGFloat {
-        set {
+    public var cropTime: CGFloat = 0 {
+        willSet {
             if newValue > 0 {
                 let second = (Int((newValue % 3600) % 60))
                 let minute = (Int((newValue % 3600) / 60))
                 let hour = (Int(newValue / 3600))
                 let milisec = newValue - CGFloat(hour * 3600) - CGFloat(minute * 60) - CGFloat(second)
                 let miliSecStr = Double(milisec).stripDecimalZeroAsString() ?? ""
-                self._cropTime = newValue
                 if hour == 0 {
                     self.timeLabel.text = "\(minute.addLeadingZeroAsString()):\(second.addLeadingZeroAsString())\(miliSecStr)"
                 } else {
                     self.timeLabel.text = "\(hour.addLeadingZeroAsString()):\(minute.addLeadingZeroAsString()):\(second.addLeadingZeroAsString())\(miliSecStr)"
                 }
             } else {
-                self._cropTime = 0 // default to 0 if assigned negative vlue
                 self.timeLabel.text = "00:00"
             }
-        }
-        get {
-            return self._cropTime
+            setNeedsDisplay()
         }
     }
     
@@ -48,7 +44,6 @@ public class Cropper: UIView {
     var cropperType: CropperType = .Left
     let timeLabel: UILabel = UILabel()
     let labelHeight: CGFloat = 20
-    var _cropTime: CGFloat = 0
     
     init(cropperType: CropperType, lineThickness: CGFloat = 2, lineColor: UIColor = UIColor.redColor()) {
         self.cropperType = cropperType
@@ -78,17 +73,18 @@ public class Cropper: UIView {
         self.cropTime = 0
         timeLabel.text = "00:00"
         timeLabel.textColor = self.lineColor
-        timeLabel.font = UIFont(name: "San Francisco", size: 10)
+        timeLabel.font = UIFont(name: "San Francisco", size: 12)
         timeLabel.adjustsFontSizeToFitWidth = true
     }
     
     func setTimeLabel(timeText time: String?) {
         self.timeLabel.text = time
     }
-    
+    /*
     override public func drawRect(rect: CGRect) {
         print("drawRect, rect bounds: \(rect.width), \(rect.height)")
     }
+    */
     
     override public func layoutSubviews() {
         super.layoutSubviews()
