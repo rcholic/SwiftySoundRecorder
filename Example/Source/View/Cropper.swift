@@ -18,10 +18,13 @@ public class Cropper: UIView {
     public var cropTime: CGFloat = 0 {
         willSet {
             if newValue > 0 {
-                let second = (Int((newValue % 3600) % 60))
+                var second = (Int((newValue % 3600) % 60))
                 let minute = (Int((newValue % 3600) / 60))
                 let hour = (Int(newValue / 3600))
-                let milisec = newValue - CGFloat(hour * 3600) - CGFloat(minute * 60) - CGFloat(second)
+                var milisec: CGFloat = newValue - CGFloat(hour * 3600) - CGFloat(minute * 60) - CGFloat(second)
+                let rounded = Int(round(milisec))
+                second += rounded
+                milisec = (rounded == 1) ? 0 : milisec
                 let miliSecStr = Double(milisec).stripDecimalZeroAsString() ?? ""
                 if hour == 0 {
                     self.timeLabel.text = "\(minute.addLeadingZeroAsString()):\(second.addLeadingZeroAsString())\(miliSecStr)"
