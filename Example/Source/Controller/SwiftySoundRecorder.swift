@@ -97,45 +97,35 @@ public class SwiftySoundRecorder: UIViewController {
         if audioPlayer == nil {
             do {
                 try audioPlayer = AVAudioPlayer(contentsOfURL: audioFileUrl, fileTypeHint: audioFileType)
+                audioPlayer!.delegate = self
+                audioPlayer!.rate = 1.0
             } catch let error {
                 print("error in creating audio player: \(error)")
             }
         }
         
-        print("preparing to play! duration: \(audioPlayer!.duration)")
-        audioDuration = audioPlayer!.duration // update the audioDuration
-        audioPlayer!.delegate = self
-        audioPlayer!.rate = 1.0
+        audioDuration = audioPlayer!.duration
         audioPlayer!.prepareToPlay()
-        
-        if operationMode == .Cropping {
-            if audioPlayer!.currentTime < NSTimeInterval(leftCropper.cropTime) {
-                // always play from the crop time in Cropping mode
-                audioPlayer!.currentTime = NSTimeInterval(leftCropper.cropTime)
-            }
-            if audioPlayer!.playing {
-                audioPlayer!.pause()
-                audioTimer.invalidate()
-                playButton.setBackgroundImage(self.playIcon, forState: .Normal)
-            } else {
-                audioPlayer!.play()
-                playButton.setBackgroundImage(self.pauseIcon, forState: .Normal)
-            }
-        } else {
-            self.operationMode = .Playing
-            audioPlayer!.meteringEnabled = true
+        print("current time: \(audioPlayer!.currentTime)")
+        if operationMode == .Cropping && audioPlayer!.currentTime <= NSTimeInterval(leftCropper.cropTime) {
+            // always play from the crop time in Cropping mode
+            audioPlayer!.currentTime = NSTimeInterval(leftCropper.cropTime)
             
-            if audioPlayer!.playing {
-                audioPlayer!.pause()
-                audioTimer.invalidate()
-                playButton.setBackgroundImage(self.playIcon, forState: .Normal)
-            } else {
-                
+        } else {
+            operationMode = .Playing
+            audioPlayer!.meteringEnabled = true
+        }
+        
+        if audioPlayer!.playing {
+            audioPlayer!.pause()
+            audioTimer.invalidate()
+            playButton.setBackgroundImage(self.playIcon, forState: .Normal)
+        } else {
+            if operationMode == .Playing {
                 audioTimer = NSTimer.scheduledTimerWithTimeInterval(waveUpdateInterval, target: self, selector: #selector(self.audioTimerCallback), userInfo: nil, repeats: true)
-                audioPlayer!.play()
-                playButton.setBackgroundImage(self.pauseIcon, forState: .Normal)
-                print("player is playing")
             }
+            audioPlayer!.play()
+            playButton.setBackgroundImage(self.pauseIcon, forState: .Normal)
         }
     }
     
@@ -145,8 +135,6 @@ public class SwiftySoundRecorder: UIViewController {
         if recorder.recording {
             recorder.stop()
         }
-//        print("invalidating audio timer")
-//        audioTimer.invalidate()
     }
     
     @objc private func toggleRecording(sender: AnyObject?) {
@@ -177,7 +165,6 @@ public class SwiftySoundRecorder: UIViewController {
             audioTimer = NSTimer.scheduledTimerWithTimeInterval(waveUpdateInterval, target: self, selector: #selector(self.audioTimerCallback), userInfo: nil, repeats: true)
             audioRecorder!.record()
             micButton.setBackgroundImage(pauseIcon, forState: .Normal)
-            print("recorder started")
         }
     }
     
@@ -206,7 +193,7 @@ public class SwiftySoundRecorder: UIViewController {
             runOnMainQueue(callback: {
                 self.audioWaveContainerView.addSubview(self.leftCropper)
                 self.audioWaveContainerView.addSubview(self.rightCropper)
-                self.rightCropper.cropTime = CGFloat(self.audioDuration)
+                self.rightCropper.cropTime = CGFloat(self.audioDuration) // TODO: check if audioDuration is always accurate
             })
         }
         // position the croppers
@@ -241,7 +228,6 @@ public class SwiftySoundRecorder: UIViewController {
                 } else if (remainingTime <= 6) {
                     // Give warning when the remaining time is 6 sec or less
                     if Int(remainingTime) % 2 == 1 {
-                        // TODO: flash the color every half second rather than 1 sec
                         clockIcon.tintColor = UIColor.redColor()
                         timeLabel.textColor = UIColor.redColor()
                     } else {
@@ -255,7 +241,7 @@ public class SwiftySoundRecorder: UIViewController {
             
             audioSiriWaveView.updateWithLevel(CGFloat(pow(10, audioRecorder!.averagePowerForChannel(0)/20)))
         }
-        _updateTimeLabel(remainingTime + 0.15)
+        _updateTimeLabel(remainingTime + 0.15) // TODO: use UISlider for playing, move this line to recorder block
     }
     
     @objc private func didTapDoneButton(sender: UIButton) {
