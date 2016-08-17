@@ -33,8 +33,8 @@ public struct Configuration {
     // MARK Titles
     public static var navBarButtonLabelsDict: [String : String ] = ["Cancel": "Cancel", "Done": "Done"]
     
-    public static var originalRecordingFileName: String = "recording2." // to be appended by file type
-    public static var trimmedRecordingFileName: String = "recording_trimmed2."
+    public static var originalRecordingFileName: String = "recording." // to be appended by file type
+    public static var trimmedRecordingFileName: String = "recording_trimmed."
     
     // MARK Dimensions
     public static var cropperLineThickness: CGFloat = 2

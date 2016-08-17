@@ -63,6 +63,7 @@ public class SwiftySoundRecorder: UIViewController {
     
     override public func viewDidLoad() {
         super.viewDidLoad()
+        fileManager.delegate = self
         curAudioPathStr = nil
         operationMode = .Idling
         setupUI()
@@ -85,39 +86,56 @@ public class SwiftySoundRecorder: UIViewController {
         audioTimer.invalidate()
         audioPlayer = nil
         audioRecorder = nil
+        // TODO: clean up unwanted recordings
     }
     
     @objc private func playRecording(sender: AnyObject?) {
+        
         guard let pathStr = curAudioPathStr else {return}
-        self.operationMode = .Playing
         let audioFileUrl = NSURL(string: pathStr)!
+        
         if audioPlayer == nil {
             do {
                 try audioPlayer = AVAudioPlayer(contentsOfURL: audioFileUrl, fileTypeHint: audioFileType)
-                audioDuration = 0 // start counting duration for every new player
             } catch let error {
                 print("error in creating audio player: \(error)")
             }
         }
+        
         print("preparing to play! duration: \(audioPlayer!.duration)")
         audioDuration = audioPlayer!.duration // update the audioDuration
-        audioPlayer!.meteringEnabled = true
         audioPlayer!.delegate = self
         audioPlayer!.rate = 1.0
         audioPlayer!.prepareToPlay()
         
-        if audioPlayer!.playing {
-            audioPlayer!.pause()
-            print("audio player paused!")
-            audioTimer.invalidate()
-//            self.operationMode = .Idling
-            playButton.setBackgroundImage(self.playIcon, forState: .Normal)
+        if operationMode == .Cropping {
+            if audioPlayer!.currentTime < NSTimeInterval(leftCropper.cropTime) {
+                // always play from the crop time in Cropping mode
+                audioPlayer!.currentTime = NSTimeInterval(leftCropper.cropTime)
+            }
+            if audioPlayer!.playing {
+                audioPlayer!.pause()
+                audioTimer.invalidate()
+                playButton.setBackgroundImage(self.playIcon, forState: .Normal)
+            } else {
+                audioPlayer!.play()
+                playButton.setBackgroundImage(self.pauseIcon, forState: .Normal)
+            }
         } else {
-            playButton.setBackgroundImage(self.pauseIcon, forState: .Normal)
-//            self.operationMode = .Playing
-            audioTimer = NSTimer.scheduledTimerWithTimeInterval(waveUpdateInterval, target: self, selector: #selector(self.audioTimerCallback), userInfo: nil, repeats: true)
-            audioPlayer!.play()
-            print("player is playing")
+            self.operationMode = .Playing
+            audioPlayer!.meteringEnabled = true
+            
+            if audioPlayer!.playing {
+                audioPlayer!.pause()
+                audioTimer.invalidate()
+                playButton.setBackgroundImage(self.playIcon, forState: .Normal)
+            } else {
+                
+                audioTimer = NSTimer.scheduledTimerWithTimeInterval(waveUpdateInterval, target: self, selector: #selector(self.audioTimerCallback), userInfo: nil, repeats: true)
+                audioPlayer!.play()
+                playButton.setBackgroundImage(self.pauseIcon, forState: .Normal)
+                print("player is playing")
+            }
         }
     }
     
@@ -127,8 +145,8 @@ public class SwiftySoundRecorder: UIViewController {
         if recorder.recording {
             recorder.stop()
         }
-        print("invalidating audio timer")
-        audioTimer.invalidate()
+//        print("invalidating audio timer")
+//        audioTimer.invalidate()
     }
     
     @objc private func toggleRecording(sender: AnyObject?) {
@@ -166,17 +184,16 @@ public class SwiftySoundRecorder: UIViewController {
     @objc private func beginAudioCropMode(sender: AnyObject?) {
         
         guard let filePathStr = curAudioPathStr else { return }
-        
-        if let player = audioPlayer {
-            player.stop()
-            audioTimer.invalidate()
-        }
-        
         self.operationMode = .Cropping // TODO: stop audioRecorder, player, buttons etc.
+        audioPlayer?.stop()
+        audioPlayer = nil
+        audioTimer.invalidate()
+
         let fileURL = NSURL(fileURLWithPath: filePathStr)
         self.waveFormView.audioURL = fileURL
         
         if isCroppingEnabled && sender as! UIButton == scissorButton {
+            // TODO: warning when the trimmed audio is less than 2 seconds
             trimAudio(fileURL, startTime: leftCropper._cropTime, endTime: rightCropper._cropTime)
         }
     }
@@ -456,7 +473,12 @@ public class SwiftySoundRecorder: UIViewController {
     }
     
     private func trimAudio(audioFileURL: NSURL, startTime: CGFloat, endTime: CGFloat) {
-        print("trimming audio now!")
+        doneButton.enabled = false
+        audioPlayer?.stop()
+        audioTimer.invalidate()
+        audioPlayer = nil
+        playButton.setBackgroundImage(playIcon, forState: .Normal)
+        
         let audioAsset = AVAsset(URL: audioFileURL)
         let curAudioTrack = audioAsset.tracksWithMediaType(AVMediaTypeAudio).first
         
@@ -475,10 +497,6 @@ public class SwiftySoundRecorder: UIViewController {
             let exportAudioMixInputParams = AVMutableAudioMixInputParameters(track: curAudioTrack)
             exportAudioMix.inputParameters = NSArray(array: [exportAudioMixInputParams]) as! [AVAudioMixInputParameters]
             
-//            let trimmedAudioName = Configuration.trimmedRecordingFileName
-//            // NSProcessInfo.processInfo().globallyUniqueString
-//            let trimmedAudioURL = docDirectoryPath.URLByAppendingPathComponent("\(trimmedAudioName).m4a")
-//            
             if fileManager.fileExistsAtPath(trimmedAudioURL.path!) {
                 print("fileManager removing the existing trimmed audio")
                 try! fileManager.removeItemAtURL(trimmedAudioURL)
@@ -496,22 +514,23 @@ public class SwiftySoundRecorder: UIViewController {
                 case AVAssetExportSessionStatus.Completed:
                     
                     print("audio has been successfully trimed!")
-                    self.curAudioPathStr = self.trimmedAudioURL.path!
-                    self.waveFormView.audioURL = self.trimmedAudioURL
+                    //                        try! self.fileManager.removeItemAtURL(self.originalRecordedAudioURL)
+                    //                        try! self.fileManager.moveItemAtURL(self.trimmedAudioURL, toURL: self.originalRecordedAudioURL) // swap, then delete the file at trimmedAudioURL
+                    
+                    let duration = Double(endTime - startTime)
+                    self._updateUIOnCropFinish(exportSession.outputURL!, newAudioDuration: duration)
                     
                 case AVAssetExportSessionStatus.Failed:
                     print("audio trimming failed!")
                     
-                    self.runOnMainQueue(callback: { 
-                        if exportSession.status == AVAssetExportSessionStatus.Completed {
-                            let uniqueStr = NSProcessInfo.processInfo().globallyUniqueString
-                            let newAudioUrl = self.docDirectoryPath.URLByAppendingPathComponent("\(String(uniqueStr)).\(self.audioFileType)")
-                            //                        self.audioUrl = NSURL(fileURLWithPath: newFilePath.path!)
-                            try! self.fileManager.moveItemAtURL(exportSession.outputURL!, toURL: newAudioUrl)
-                            self.curAudioPathStr = newAudioUrl.path
-                            self.waveFormView.audioURL = newAudioUrl
-                        }
-                    })
+                    if exportSession.status == AVAssetExportSessionStatus.Completed {
+                        let uniqueStr = NSProcessInfo.processInfo().globallyUniqueString
+                        let newAudioUrl = self.docDirectoryPath.URLByAppendingPathComponent("\(String(uniqueStr)).\(self.audioFileType)")
+                        try! self.fileManager.moveItemAtURL(exportSession.outputURL!, toURL: newAudioUrl)
+
+                        let duration = Double(endTime - startTime)
+                        self._updateUIOnCropFinish(newAudioUrl, newAudioDuration: duration)
+                    }
                     
                 case AVAssetExportSessionStatus.Cancelled:
                     print("trimmed was cancelled")
@@ -520,6 +539,21 @@ public class SwiftySoundRecorder: UIViewController {
                     print("trimming and export completed!")
                 }
             })
+        }
+    }
+    
+    // MARK: Update UI when cropping is finished
+    private func _updateUIOnCropFinish(croppedFileURL: NSURL, newAudioDuration duration: NSTimeInterval) {
+        
+        self.waveFormView.audioURL = croppedFileURL
+        runOnMainQueue {
+            self.audioPlayer = nil
+            self.curAudioPathStr = croppedFileURL.path
+            self.scissorButton.tintColor = self.view.tintColor
+            self.audioDuration = duration
+            self.leftCropper.cropTime = 0
+            self.rightCropper.cropTime = CGFloat(duration)
+            self.doneButton.enabled = true
         }
     }
     
@@ -795,7 +829,6 @@ extension SwiftySoundRecorder: SwiftySoundRecorderDelegate {
 extension SwiftySoundRecorder {
     
     @objc func didMoveLeftCropper(panRecognizer: UIPanGestureRecognizer) {
-        print("did move left cropper")
         
         var panBeginPoint: CGPoint = CGPointZero // panRecognizer.translationInView(audioWaveContainerView) // leftCropper.frame.origin
         var beginCenter: CGPoint = CGPointZero
@@ -804,9 +837,11 @@ extension SwiftySoundRecorder {
         case UIGestureRecognizerState.Began:
             panBeginPoint = panRecognizer.translationInView(audioWaveContainerView)
             beginCenter = leftCropper.center
-            // TODO: Invocation
-            audioPlayer?.stop() // make sure stopped
+
+            audioPlayer?.stop() // make sure they stopped
             audioRecorder?.stop()
+            playButton.setBackgroundImage(playIcon, forState: .Normal)
+            audioTimer.invalidate()
             
         case UIGestureRecognizerState.Changed:
             
@@ -816,13 +851,12 @@ extension SwiftySoundRecorder {
             pointX = min(rightCropper.frame.minX, pointX)
             leftCropper.center = CGPointMake(pointX, beginCenter.y + leftCropper.bounds.height / 2) // + 1/2 height ?
             
-            // TODO: update crop time label
+            // update crop time label
             let leftPercentage = CGFloat((leftCropper.center.x - (leftCropper.frame.width / 2)) / waveFormView.frame.size.width)
-            let curPlayerDuration = audioPlayer?.duration ?? audioDuration // buggy ! cannot convert float to Int sometimes!
+            let curPlayerDuration = audioPlayer?.duration ?? audioDuration
             leftCropper.cropTime = leftPercentage * CGFloat(curPlayerDuration)
-            audioPlayer?.currentTime = NSTimeInterval(leftCropper.cropTime) // let audioPlayer start playing from the left cropper's position
-            let curPlayedPercentage: Double = (audioPlayer?.currentTime ?? 0) / curPlayerDuration
-            print("leftPercentage: \(leftPercentage), curPlayerDuration: \(curPlayerDuration), curPlayedPercentage: \(curPlayedPercentage)")
+            let curPlayedPercentage: Double = Double(leftCropper.cropTime) / curPlayerDuration
+
             waveFormView.progressSamples = Int(Double(waveFormView.totalSamples) * curPlayedPercentage)
             
             if leftCropper.cropTime > 0 {
@@ -849,10 +883,15 @@ extension SwiftySoundRecorder {
 
 extension SwiftySoundRecorder: AVAudioPlayerDelegate {
     public func audioPlayerDidFinishPlaying(player: AVAudioPlayer, successfully flag: Bool) {
-        audioDuration = audioPlayer!.duration
-        print("recorded audio duration: \(audioDuration) after playing")
         audioTimer.invalidate()
         playButton.setBackgroundImage(self.playIcon, forState: .Normal)
+        audioDuration = player.duration
+        print("recorded audio duration: \(audioDuration) after playing")
+        
+        if operationMode == .Cropping {
+            return
+        }
+        
         audioPlayer = nil
         self.operationMode = .Idling
     }
@@ -926,7 +965,6 @@ extension SwiftySoundRecorder: FDWaveformViewDelegate {
             self.audioWaveContainerView.alpha = 1.0
             self._toggleActivityIndicator(toShow: false)
             self.waveFormView.hidden = false
-            
             self._loadCroppers()
         }
     }
@@ -937,6 +975,17 @@ extension SwiftySoundRecorder: FDWaveformViewDelegate {
     
     public func waveformDidEndPanning(waveformView: FDWaveformView!) {
         print("wave form ended panning")
+    }
+}
+
+extension SwiftySoundRecorder: NSFileManagerDelegate {
+    
+    public func fileManager(fileManager: NSFileManager, shouldMoveItemAtURL srcURL: NSURL, toURL dstURL: NSURL) -> Bool {
+        return true
+    }
+    
+    public func fileManager(fileManager: NSFileManager, shouldRemoveItemAtURL URL: NSURL) -> Bool {
+        return true
     }
 }
 

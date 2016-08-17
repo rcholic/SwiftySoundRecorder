@@ -29,7 +29,7 @@ class ViewController: UIViewController {
 
 extension ViewController: SwiftySoundRecorderDelegate {
     func doneRecordingDidPress(soundRecorder: SwiftySoundRecorder, audioFilePath: String) {
-        print("done recording button tapped")
+        print("done recording button tapped, audioFilePath: \(audioFilePath)")
         soundRecorder.dismissViewControllerAnimated(true, completion: nil)
     }
     
