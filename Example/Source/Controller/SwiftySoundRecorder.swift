@@ -183,17 +183,18 @@ public class SwiftySoundRecorder: UIViewController {
         
         if isCroppingEnabled && sender as! UIButton == scissorButton {
             // TODO: warning when the trimmed audio is less than 2 seconds
-            trimAudio(fileURL, startTime: leftCropper._cropTime, endTime: rightCropper._cropTime)
+            trimAudio(fileURL, startTime: leftCropper.cropTime, endTime: rightCropper.cropTime)
         }
     }
     
     private func _loadCroppers() {
+        print("loading croppers: duration: \(audioDuration)")
+        self.leftCropper.cropTime = 0
+        self.rightCropper.cropTime = CGFloat(self.audioDuration)
         if !audioWaveContainerView.subviews.contains(leftCropper) {
-            
             runOnMainQueue(callback: {
                 self.audioWaveContainerView.addSubview(self.leftCropper)
                 self.audioWaveContainerView.addSubview(self.rightCropper)
-                self.rightCropper.cropTime = CGFloat(self.audioDuration) // TODO: check if audioDuration is always accurate
             })
         }
         // position the croppers
@@ -545,8 +546,8 @@ public class SwiftySoundRecorder: UIViewController {
             self.curAudioPathStr = croppedFileURL.path
             self.scissorButton.tintColor = self.view.tintColor
             self.audioDuration = duration
-            self.leftCropper.cropTime = 0
-            self.rightCropper.cropTime = CGFloat(duration)
+//            self.leftCropper.cropTime = 0
+//            self.rightCropper.cropTime = CGFloat(duration)
             self.doneButton.enabled = true
         }
     }

@@ -21,6 +21,8 @@
 		EB6B48A41D60D7CD00622AD9 /* SwiftySoundRecorder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6B48A31D60D7CD00622AD9 /* SwiftySoundRecorder.framework */; };
 		EB6B48A61D60D7D300622AD9 /* SnapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6B48A51D60D7D300622AD9 /* SnapKit.framework */; };
 		EB6B48C11D61205C00622AD9 /* ic_av_timer_2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48A81D61205C00622AD9 /* ic_av_timer_2x.png */; };
+		EB6B48C31D61205C00622AD9 /* ic_av_timer.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48AA1D61205C00622AD9 /* ic_av_timer.png */; };
+		EB6B48C61D61205C00622AD9 /* ic_fiber_manual_record.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48AD1D61205C00622AD9 /* ic_fiber_manual_record.png */; };
 		EB6B48CC1D61205C00622AD9 /* ic_mic.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48B31D61205C00622AD9 /* ic_mic.png */; };
 		EB6B48CF1D61205C00622AD9 /* ic_pause.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48B61D61205C00622AD9 /* ic_pause.png */; };
 		EB6B48D21D61205C00622AD9 /* ic_play_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48B91D61205C00622AD9 /* ic_play_arrow.png */; };
@@ -73,6 +75,8 @@
 		EB6B48A51D60D7D300622AD9 /* SnapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SnapKit.framework; path = "../../../../../../../Library/Developer/Xcode/DerivedData/SwiftySoundRecorder-girwadnswiaqafgpwuihmyzftlux/Build/Products/Debug-iphonesimulator/SnapKit/SnapKit.framework"; sourceTree = "<group>"; };
 		EB6B48A71D60D81400622AD9 /* SwiftySoundRecorder-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwiftySoundRecorder-Bridging-Header.h"; sourceTree = "<group>"; };
 		EB6B48A81D61205C00622AD9 /* ic_av_timer_2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_av_timer_2x.png; path = Images/ic_av_timer_2x.png; sourceTree = "<group>"; };
+		EB6B48AA1D61205C00622AD9 /* ic_av_timer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_av_timer.png; path = Images/ic_av_timer.png; sourceTree = "<group>"; };
+		EB6B48AD1D61205C00622AD9 /* ic_fiber_manual_record.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_fiber_manual_record.png; path = Images/ic_fiber_manual_record.png; sourceTree = "<group>"; };
 		EB6B48B31D61205C00622AD9 /* ic_mic.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_mic.png; path = Images/ic_mic.png; sourceTree = "<group>"; };
 		EB6B48B61D61205C00622AD9 /* ic_pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_pause.png; path = Images/ic_pause.png; sourceTree = "<group>"; };
 		EB6B48B91D61205C00622AD9 /* ic_play_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_play_arrow.png; path = Images/ic_play_arrow.png; sourceTree = "<group>"; };
@@ -210,6 +214,8 @@
 				EB6B48E31D6152E900622AD9 /* ic_undo.png */,
 				EB6B48DD1D61526300622AD9 /* ic_content_cut.png */,
 				EB6B48A81D61205C00622AD9 /* ic_av_timer_2x.png */,
+				EB6B48AA1D61205C00622AD9 /* ic_av_timer.png */,
+				EB6B48AD1D61205C00622AD9 /* ic_fiber_manual_record.png */,
 				EB6B48B31D61205C00622AD9 /* ic_mic.png */,
 				EB6B48B61D61205C00622AD9 /* ic_pause.png */,
 				EB6B48B91D61205C00622AD9 /* ic_play_arrow.png */,
@@ -320,10 +326,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB6B48CF1D61205C00622AD9 /* ic_pause.png in Resources */,
+				EB6B48C61D61205C00622AD9 /* ic_fiber_manual_record.png in Resources */,
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				EBDC6A7D1D5FFDE400404F68 /* milkyway.jpg in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
+				EB6B48C31D61205C00622AD9 /* ic_av_timer.png in Resources */,
 				EB6B48E01D61526300622AD9 /* ic_content_cut.png in Resources */,
 				EB6B48C11D61205C00622AD9 /* ic_av_timer_2x.png in Resources */,
 				EB6B48D51D61205C00622AD9 /* ic_stop.png in Resources */,
