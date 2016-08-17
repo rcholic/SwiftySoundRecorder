@@ -15,6 +15,7 @@
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		DEA05236690CB2C750903818 /* Pods_SwiftySoundRecorder_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04F9A51A419B3454EB49F7ED /* Pods_SwiftySoundRecorder_Tests.framework */; };
+		EB61218B1D63F4BB00B2D191 /* AssetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB61218A1D63F4BB00B2D191 /* AssetManager.swift */; };
 		EB6B48A01D60D7C300622AD9 /* FDWaveformViewForked.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6B489F1D60D7C300622AD9 /* FDWaveformViewForked.framework */; };
 		EB6B48A21D60D7C900622AD9 /* SCSiriWaveformView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6B48A11D60D7C900622AD9 /* SCSiriWaveformView.framework */; };
 		EB6B48A41D60D7CD00622AD9 /* SwiftySoundRecorder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6B48A31D60D7CD00622AD9 /* SwiftySoundRecorder.framework */; };
@@ -88,6 +89,7 @@
 		ACEE1B1F08B6F782756AF299 /* Pods-SwiftySoundRecorder_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftySoundRecorder_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftySoundRecorder_Tests/Pods-SwiftySoundRecorder_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		BE09C0D12371A5B70094020C /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		C9FEAE327282A3B8E9ADDB82 /* Pods-SwiftySoundRecorder_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftySoundRecorder_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftySoundRecorder_Example/Pods-SwiftySoundRecorder_Example.release.xcconfig"; sourceTree = "<group>"; };
+		EB61218A1D63F4BB00B2D191 /* AssetManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AssetManager.swift; path = Source/AssetManager.swift; sourceTree = "<group>"; };
 		EB6B489F1D60D7C300622AD9 /* FDWaveformViewForked.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FDWaveformViewForked.framework; path = "../../../../../../../Library/Developer/Xcode/DerivedData/SwiftySoundRecorder-girwadnswiaqafgpwuihmyzftlux/Build/Products/Debug-iphonesimulator/FDWaveformViewForked/FDWaveformViewForked.framework"; sourceTree = "<group>"; };
 		EB6B48A11D60D7C900622AD9 /* SCSiriWaveformView.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SCSiriWaveformView.framework; path = "../../../../../../../Library/Developer/Xcode/DerivedData/SwiftySoundRecorder-girwadnswiaqafgpwuihmyzftlux/Build/Products/Debug-iphonesimulator/SCSiriWaveformView/SCSiriWaveformView.framework"; sourceTree = "<group>"; };
 		EB6B48A31D60D7CD00622AD9 /* SwiftySoundRecorder.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftySoundRecorder.framework; path = "../../../../../../../Library/Developer/Xcode/DerivedData/SwiftySoundRecorder-girwadnswiaqafgpwuihmyzftlux/Build/Products/Debug-iphonesimulator/SwiftySoundRecorder/SwiftySoundRecorder.framework"; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 			isa = PBXGroup;
 			children = (
 				EB6B48DA1D61206500622AD9 /* icons */,
+				EB61218A1D63F4BB00B2D191 /* AssetManager.swift */,
 				EB6B48A71D60D81400622AD9 /* SwiftySoundRecorder-Bridging-Header.h */,
 				EBDC6A7F1D5FFE5D00404F68 /* Cropper.swift */,
 				EBDC6A7C1D5FFDE400404F68 /* milkyway.jpg */,
@@ -537,6 +540,7 @@
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				EBDC6A771D5FF78900404F68 /* Configuration.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				EB61218B1D63F4BB00B2D191 /* AssetManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
