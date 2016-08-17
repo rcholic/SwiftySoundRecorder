@@ -585,7 +585,8 @@ public class SwiftySoundRecorder: UIViewController {
         return button
     }()
     
-    private let playIcon = UIImage(named: "ic_play_arrow")?.imageWithRenderingMode(.AlwaysTemplate)
+    private let playIcon = AssetManager.getImage("ic_play_arrow").imageWithRenderingMode(.AlwaysTemplate)
+//        UIImage(named: "ic_play_arrow")?.imageWithRenderingMode(.AlwaysTemplate)
     private lazy var playButton: UIButton = {
         let button = UIButton(type: .Custom)
         button.hidden = true // hidden default
@@ -599,7 +600,8 @@ public class SwiftySoundRecorder: UIViewController {
         return button
     }()
     
-    let stopIcon = UIImage(named: "ic_stop")?.imageWithRenderingMode(.AlwaysTemplate)
+    let stopIcon = AssetManager.getImage("ic_stop").imageWithRenderingMode(.AlwaysTemplate)
+//        UIImage(named: "ic_stop")?.imageWithRenderingMode(.AlwaysTemplate)
     private lazy var stopButton: UIButton = {
         let button = UIButton(type: .Custom)
 //        button.frame = CGRect(x: 0, y: 5, width: 35, height: 35)
@@ -613,22 +615,12 @@ public class SwiftySoundRecorder: UIViewController {
     }()
     
     // pauseButton and micButton alternate in the same position
-    let pauseIcon = UIImage(named: "ic_pause")?.imageWithRenderingMode(.AlwaysTemplate)
-    /*
-    private lazy var pauseRecordingButton: UIButton = {
-        let button = UIButton(type: .Custom)
-        //        button.frame = CGRect(x: 0, y: 5, width: 35, height: 35)
-        button.setBackgroundImage(self.pauseIcon, forState: .Normal)
-        button.tintColor = UIColor.redColor()
-        button.hidden = true // default to be hidden
-        button.contentMode = .ScaleAspectFit
-        button.addTarget(self, action: #selector(self.toggleRecording), forControlEvents: .TouchUpInside)
-        
-        return button
-    }()
-    */
+    let pauseIcon = AssetManager.getImage("ic_pause").imageWithRenderingMode(.AlwaysTemplate)
+//        UIImage(named: "ic_pause")?.imageWithRenderingMode(.AlwaysTemplate)
     
-    let micIcon = UIImage(named: "ic_mic")?.imageWithRenderingMode(.AlwaysTemplate)
+    
+    let micIcon = AssetManager.getImage("ic_mic").imageWithRenderingMode(.AlwaysTemplate)
+    // UIImage(named: "ic_mic")?.imageWithRenderingMode(.AlwaysTemplate)
     private lazy var micButton: UIButton = {
         let button = UIButton(type: .Custom)
         //        button.frame = CGRect(x: 0, y: 5, width: 35, height: 35)
@@ -644,7 +636,8 @@ public class SwiftySoundRecorder: UIViewController {
         return button
     }()
     
-    let scissorIcon = UIImage(named: "ic_content_cut")?.imageWithRenderingMode(.AlwaysTemplate)
+    let scissorIcon = AssetManager.getImage("ic_content_cut").imageWithRenderingMode(.AlwaysTemplate)
+//        UIImage(named: "ic_content_cut")?.imageWithRenderingMode(.AlwaysTemplate)
     private lazy var scissorButton: UIButton = {
         let button = UIButton(type: .Custom)
 //        button.frame = CGRect(x: self.view.bounds.width - 40, y: 5, width: 30, height: 30)
@@ -660,7 +653,8 @@ public class SwiftySoundRecorder: UIViewController {
         return button
     }()
     
-    let undoIcon = UIImage(named: "ic_undo")?.imageWithRenderingMode(.AlwaysTemplate)
+    let undoIcon = AssetManager.getImage("ic_undo").imageWithRenderingMode(.AlwaysTemplate)
+//        UIImage(named: "ic_undo")?.imageWithRenderingMode(.AlwaysTemplate)
     private lazy var undoTrimmingButton: UIButton = {
         let button = UIButton(type: .Custom)
         //        button.frame = CGRect(x: self.view.bounds.width - 40, y: 5, width: 30, height: 30)
@@ -703,7 +697,7 @@ public class SwiftySoundRecorder: UIViewController {
         return view
     }()
     
-    let clockIcon = UIImageView(image: UIImage(named: "ic_av_timer_2x")?.imageWithRenderingMode(.AlwaysTemplate))
+    let clockIcon = UIImageView(image: AssetManager.getImage("ic_av_timer_2x").imageWithRenderingMode(.AlwaysTemplate))
     private lazy var timeLabel: UILabel = {
         let label = UILabel() // TODO:
         label.translatesAutoresizingMaskIntoConstraints = false
