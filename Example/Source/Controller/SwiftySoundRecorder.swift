@@ -183,6 +183,8 @@ public class SwiftySoundRecorder: UIViewController {
     
     @objc private func beginAudioCropMode(sender: AnyObject?) {
         
+        guard allowCropping == true else { return }
+        
         guard let filePathStr = curAudioPathStr else { return }
         self.operationMode = .Cropping // TODO: stop audioRecorder, player, buttons etc.
         audioPlayer?.stop()
@@ -382,11 +384,14 @@ public class SwiftySoundRecorder: UIViewController {
             make.width.height.equalTo(35)
         }
         
-        bottomNavBar.addSubview(scissorButton)
-        scissorButton.snp_makeConstraints { (make) in
-            make.top.equalTo(bottomNavBar).offset(5)
-            make.right.equalTo(bottomNavBar).offset(-10)
-            make.width.height.equalTo(35)
+        // if allow cropping, add the scissor button
+        if allowCropping {
+            bottomNavBar.addSubview(scissorButton)
+            scissorButton.snp_makeConstraints { (make) in
+                make.top.equalTo(bottomNavBar).offset(5)
+                make.right.equalTo(bottomNavBar).offset(-10)
+                make.width.height.equalTo(35)
+            }
         }
         
         bottomNavBar.addSubview(playButton)
@@ -473,6 +478,9 @@ public class SwiftySoundRecorder: UIViewController {
     }
     
     private func trimAudio(audioFileURL: NSURL, startTime: CGFloat, endTime: CGFloat) {
+        
+        guard allowCropping == true else { return }
+        
         doneButton.enabled = false
         audioPlayer?.stop()
         audioTimer.invalidate()
