@@ -257,6 +257,7 @@ public class SwiftySoundRecorder: UIViewController {
         audioPlayer?.stop()
         audioPlayer = nil
         audioTimer.invalidate()
+        playButton.setBackgroundImage(playIcon, forState: .Normal)
     }
     
     @objc private func didTapDoneButton(sender: UIButton) {
@@ -476,7 +477,7 @@ public class SwiftySoundRecorder: UIViewController {
         
         doneButton.enabled = false
         destroyPlayer()
-        playButton.setBackgroundImage(playIcon, forState: .Normal)
+        
         
         let audioAsset = AVAsset(URL: audioFileURL)
         let curAudioTrack = audioAsset.tracksWithMediaType(AVMediaTypeAudio).first
@@ -804,7 +805,6 @@ extension SwiftySoundRecorder {
 
             destroyPlayer()
             audioRecorder?.stop()
-            playButton.setBackgroundImage(playIcon, forState: .Normal)
             
         case UIGestureRecognizerState.Changed:
             
@@ -839,8 +839,63 @@ extension SwiftySoundRecorder {
     }
     
     @objc func didMoveRightCropper(panRecognizer: UIPanGestureRecognizer) {
-        // TODO:
-        print("not implemented yet! right move cropper")
+        NSLog("Not implemented yet")
+        /*
+        var panBeginPoint: CGPoint = CGPointZero
+        // CGPointMake(audioWaveContainerView.bounds.width - rightCropper.width, 0) // panRecognizer.translationInView(audioWaveContainerView)
+            // CGPointMake(rightCropper.frame.minX, rightCropper.frame.minY) // panRecognizer.translationInView(audioWaveContainerView) // leftCropper.frame.origin
+//        print("panBeginPoint: \(panBeginPoint.x), \(panBeginPoint.y)")
+        var beginCenter: CGPoint = rightCropper.center
+        
+        switch panRecognizer.state {
+        case UIGestureRecognizerState.Began:
+            panBeginPoint = panRecognizer.translationInView(audioWaveContainerView)
+            beginCenter = rightCropper.center
+            
+            destroyPlayer()
+            audioRecorder?.stop()
+            
+        case UIGestureRecognizerState.Changed:
+            
+            let curPanPoint = panRecognizer.translationInView(audioWaveContainerView)
+            print("curPanPoint.x: \(curPanPoint.x), leftCropper.maxX: \(leftCropper.frame.maxX)")
+//            guard curPanPoint.x > leftCropper.frame.maxX else { return } // prevent right cropper from moving to the left of the leftCropper
+            // Right Margin
+            var pointX: CGFloat = min(waveFormView.frame.maxX, beginCenter.x + curPanPoint.x - panBeginPoint.x)
+            pointX = max(rightCropper.frame.maxX, pointX)
+            rightCropper.center = CGPointMake(pointX, beginCenter.y + rightCropper.bounds.height / 2)
+            
+            // update crop time label
+            let rightPercentage = CGFloat((rightCropper.center.x - (rightCropper.frame.width / 2)) / waveFormView.frame.size.width)
+            let curPlayerDuration = audioPlayer?.duration ?? audioDuration
+            rightCropper.cropTime = rightPercentage * CGFloat(curPlayerDuration)
+            
+            // update the progress, same as in didMoveLeft(_:)
+            let curPlayedPercentage: Double = Double(leftCropper.cropTime) / curPlayerDuration
+            waveFormView.progressSamples = Int(Double(waveFormView.totalSamples) * curPlayedPercentage)
+            
+            // at least 2 seconds of audio exist after cropping
+            if leftCropper.cropTime > 0 && (rightCropper.cropTime - leftCropper.cropTime) >= 2 {
+                isCroppingEnabled = true
+                scissorButton.tintColor = UIColor.redColor()
+            } else {
+                isCroppingEnabled = false
+                scissorButton.tintColor = self.view.tintColor
+            }
+            
+        case UIGestureRecognizerState.Failed:
+            print("failed to move")
+            // Ended as default
+            panBeginPoint = CGPointZero
+            beginCenter = CGPointZero
+            
+        default:
+            // Ended as default
+            panBeginPoint = CGPointZero
+            beginCenter = CGPointZero
+        }
+        */
+        
     }
 }
 
