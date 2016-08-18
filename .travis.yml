@@ -16,7 +16,7 @@ before_install:
  - if brew outdated | grep -qx xctool; then brew upgrade xctool; fi
  - export LANG=en_US.UTF-8
  - gem install xcpretty --no-ri --no-rdoc
- - gem install cocoapods # Since Travis is not always on latest version
+# - gem install cocoapods # Since Travis is not always on latest version
 # - pod install --project-directory=Example
 script:
 - xcodebuild -workspace Example/SwiftySoundRecorder.xcworkspace -scheme SwiftySoundRecorder-Example -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 6,OS=9.3' clean build test | xcpretty --test --color
