@@ -25,8 +25,8 @@ Pod::Spec.new do |s|
 #  }
 
   s.frameworks = 'UIKit', 'AVFoundation'
-  s.dependency 'SnapKit', '~> 0.22.0'
-  s.dependency 'SCSiriWaveformView', '~> 1.0.3'
+  s.dependency 'SnapKit'
+  s.dependency 'SCSiriWaveformView'
   s.dependency 'FDWaveformViewForked', '~> 0.5.0'
   #s.dependency 'FDWaveformView', '~> 1.0.1'
 #  s.dependency  'FDWaveformView', :git => 'https://github.com/hackiftekhar/FDWaveformView.git', :commit => '65369f6729bec964db984b7f7439a915342237de'
