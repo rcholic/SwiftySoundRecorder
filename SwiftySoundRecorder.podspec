@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'SwiftySoundRecorder'
-  s.version          = '0.0.1'
+  s.version          = '0.0.8'
   s.summary          = 'A Swift ySound Recorder with Sound Wave Views.'
   s.homepage         = 'https://github.com/rcholic/SwiftySoundRecorder'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
@@ -25,7 +25,6 @@ Pod::Spec.new do |s|
 #  }
 
   s.frameworks = 'UIKit', 'AVFoundation'
-#  s.dependency 'SnapKit'
   s.dependency 'SCSiriWaveformView'
   s.dependency 'FDWaveformViewForked', '~> 0.5.0'
 #  s.dependency 'FDWaveformView', '~> 1.0.1'

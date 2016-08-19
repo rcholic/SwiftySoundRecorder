@@ -513,7 +513,7 @@ public class SwiftySoundRecorder: UIViewController {
     // MARK: buttons
     
     private lazy var cancelButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 10, width: 70, height: 30))
+        let button = UIButton(frame: CGRect(x: 0, y: 5, width: 70, height: 30))
         button.setTitle("Cancel", forState: .Normal)
         
         button.tintColor = UIColor(red: 255, green: 0, blue: 0, alpha: 0.9) // self.view.tintColor
@@ -526,7 +526,7 @@ public class SwiftySoundRecorder: UIViewController {
     }()
     
     private lazy var doneButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: self.view.bounds.width-60, y: 10, width: 60, height: 30))
+        let button = UIButton(frame: CGRect(x: self.view.bounds.width-60, y: 5, width: 60, height: 30))
         button.setTitle("Done", forState: .Normal)
         button.enabled = false
         button.tintColor = UIColor(white: 1, alpha: 0.9)
