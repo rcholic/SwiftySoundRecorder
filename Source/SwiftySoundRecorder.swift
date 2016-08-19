@@ -333,10 +333,13 @@ public class SwiftySoundRecorder: UIViewController {
     private func _setupTopNavBar() {
         
         self.frostedView.addSubview(topNavBar)
-
         topNavBar.frame = CGRect(x: 0, y: 20, width: self.view.bounds.width, height: self.navbarHeight)
-        topNavBar.heightAnchor.constraintEqualToConstant(navbarHeight)
-        topNavBar.widthAnchor.constraintEqualToConstant(self.view.bounds.width)
+//        if #available(iOS 9.0, *) {
+////            topNavBar.heightAnchor.constraintEqualToConstant(navbarHeight)
+////            topNavBar.widthAnchor.constraintEqualToConstant(self.view.bounds.width)
+//        } else {
+//            // Fallback on earlier versions
+//        }
         
         topNavBar.addSubview(cancelButton)
         topNavBar.addSubview(doneButton)
@@ -345,18 +348,25 @@ public class SwiftySoundRecorder: UIViewController {
         timeLabel.textColor = UIColor(white: 1, alpha: 0.9)
         clockIcon.tintColor = UIColor(white: 1, alpha: 0.9)
 
-        let stackView = UIStackView()
-        stackView.axis = .Horizontal
-        stackView.alignment = .Center
-        stackView.distribution = .FillProportionally
-        stackView.spacing = 7
-        stackView.addArrangedSubview(timeLabel)
-        stackView.addArrangedSubview(clockIcon)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
+        if #available(iOS 9.0, *) {
+            let stackView = UIStackView()
+            stackView.axis = .Horizontal
+            stackView.alignment = .Center
+            stackView.distribution = .FillProportionally
+            stackView.spacing = 7
+            stackView.addArrangedSubview(timeLabel)
+            stackView.addArrangedSubview(clockIcon)
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+            
+            topNavBar.addSubview(stackView)
+            stackView.centerXAnchor.constraintEqualToAnchor(self.topNavBar.centerXAnchor).active = true
+            stackView.centerYAnchor.constraintEqualToAnchor(self.topNavBar.centerYAnchor).active = true
+        } else {
+            timeLabel.center = topNavBar.center
+            topNavBar.addSubview(timeLabel)
+            // Fallback on earlier versions
+        }
         
-        topNavBar.addSubview(stackView)
-        stackView.centerXAnchor.constraintEqualToAnchor(self.topNavBar.centerXAnchor).active = true
-        stackView.centerYAnchor.constraintEqualToAnchor(self.topNavBar.centerYAnchor).active = true
 //        stackView.center = CGPointMake(self.topNavBar.frame.width/2, 5)
     }
     
