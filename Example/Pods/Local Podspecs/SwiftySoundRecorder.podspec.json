@@ -29,11 +29,8 @@
     "AVFoundation"
   ],
   "dependencies": {
-    "SnapKit": [
-      "~> 0.22.0"
-    ],
     "SCSiriWaveformView": [
-      "~> 1.0.3"
+
     ],
     "FDWaveformViewForked": [
       "~> 0.5.0"

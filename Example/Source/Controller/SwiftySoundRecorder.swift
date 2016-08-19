@@ -11,7 +11,6 @@ import UIKit
 import AVFoundation
 import SCSiriWaveformView
 import FDWaveformViewForked
-import SnapKit
 
 internal enum SwiftySoundMode {
     case Recording
@@ -282,6 +281,10 @@ public class SwiftySoundRecorder: UIViewController {
     private func setupUI() {
         let bounds = self.view.bounds
         
+        // navbars, buttons
+        _setupTopNavBar()
+        _setupBottomNavBar()
+        
         leftPanGesture = UIPanGestureRecognizer(target: self, action: #selector(self.didMoveLeftCropper(_:)))
         rightPanGesture = UIPanGestureRecognizer(target: self, action: #selector(self.didMoveRightCropper(_:)))
         
@@ -289,12 +292,22 @@ public class SwiftySoundRecorder: UIViewController {
         self.view.addSubview(backgroundImageView)
         frostedView.frame = bounds
         self.view.addSubview(frostedView)
-        self.frostedView.addSubview(audioWaveContainerView)
-        self.frostedView.addSubview(loadingActivityIndicator)
         
-        // navbars, buttons
-        _setupTopNavBar()
-        _setupBottomNavBar()
+//        let margins = view.layoutMarginsGuide
+        audioWaveContainerView.frame = CGRect(x: 0, y: 175, width: self.view.bounds.width, height: 200)
+        audioWaveContainerView.translatesAutoresizingMaskIntoConstraints = false
+        self.frostedView.addSubview(audioWaveContainerView)
+        
+
+//        audioWaveContainerView.widthAnchor.constraintEqualToConstant(self.view.bounds.width)
+//        audioWaveContainerView.heightAnchor.constraintEqualToConstant(200)
+//        audioWaveContainerView.topAnchor.constraintEqualToAnchor(topNavBar.layoutMarginsGuide.bottomAnchor).active = true
+//        audioWaveContainerView.leadingAnchor.constraintEqualToAnchor(margins.leadingAnchor).active = true
+//        audioWaveContainerView.trailingAnchor.constraintEqualToAnchor(margins.trailingAnchor).active = true
+//        
+        
+        loadingActivityIndicator.frame = audioWaveContainerView.frame
+        self.frostedView.addSubview(loadingActivityIndicator)
     }
     
     // MARK: add audioSiriWaveView to its container view
@@ -304,9 +317,7 @@ public class SwiftySoundRecorder: UIViewController {
         if !audioWaveContainerView.subviews.contains(audioSiriWaveView) {
             audioWaveContainerView.addSubview(audioSiriWaveView)
             
-            audioSiriWaveView.snp_makeConstraints(closure: { (make) in
-                make.left.right.top.bottom.equalTo(audioWaveContainerView)
-            })
+            audioSiriWaveView.frame = CGRect(x: 0, y: 0, width: self.audioWaveContainerView.bounds.width, height: self.audioWaveContainerView.bounds.height)
         }
     }
     
@@ -315,103 +326,50 @@ public class SwiftySoundRecorder: UIViewController {
         
         if !audioWaveContainerView.subviews.contains(waveFormView) {
             audioWaveContainerView.addSubview(waveFormView)
-            waveFormView.snp_makeConstraints(closure: { (make) in
-                make.left.right.top.bottom.equalTo(audioWaveContainerView)
-            })
+            waveFormView.frame = CGRect(x: 0, y: 0, width: self.audioWaveContainerView.bounds.width, height: self.audioWaveContainerView.bounds.height)
         }
     }
     
     private func _setupTopNavBar() {
         
         self.frostedView.addSubview(topNavBar)
-        topNavBar.snp_makeConstraints { (make) in
-            make.width.equalTo(self.view.bounds.width)
-            make.top.equalTo(self.view).offset(20)
-            make.height.equalTo(navbarHeight)
-            make.left.right.equalTo(self.view)
-        }
+
+        topNavBar.frame = CGRect(x: 0, y: 20, width: self.view.bounds.width, height: self.navbarHeight)
+        topNavBar.heightAnchor.constraintEqualToConstant(navbarHeight)
+        topNavBar.widthAnchor.constraintEqualToConstant(self.view.bounds.width)
         
         topNavBar.addSubview(cancelButton)
-        cancelButton.snp_makeConstraints { (make) in
-            make.top.equalTo(topNavBar).offset(5)
-            make.left.equalTo(topNavBar).offset(5)
-            make.width.equalTo(70)
-            make.height.equalTo(30)
-        }
         topNavBar.addSubview(doneButton)
-        doneButton.snp_makeConstraints { (make) in
-            make.top.equalTo(topNavBar).offset(5)
-            make.right.equalTo(topNavBar).offset(5)
-            make.width.equalTo(70)
-            make.height.equalTo(30)
-        }
         
         timeLabel.text = "00:00"
         timeLabel.textColor = UIColor(white: 1, alpha: 0.9)
-        topNavBar.addSubview(timeLabel)
-        timeLabel.snp_makeConstraints { (make) in
-            make.center.equalTo(topNavBar)
-            make.height.equalTo(30)
-        }
-        
-        topNavBar.addSubview(clockIcon)
         clockIcon.tintColor = UIColor(white: 1, alpha: 0.9)
-        clockIcon.snp_makeConstraints { (make) in
-            make.left.equalTo(timeLabel.snp_right).offset(3)
-            make.top.equalTo(timeLabel.snp_top)
-            make.width.height.equalTo(30)
-        }
+
+        let stackView = UIStackView()
+        stackView.axis = .Horizontal
+        stackView.alignment = .Center
+        stackView.distribution = .FillProportionally
+        stackView.spacing = 7
+        stackView.addArrangedSubview(timeLabel)
+        stackView.addArrangedSubview(clockIcon)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        topNavBar.addSubview(stackView)
+        stackView.centerXAnchor.constraintEqualToAnchor(self.topNavBar.centerXAnchor).active = true
+        stackView.centerYAnchor.constraintEqualToAnchor(self.topNavBar.centerYAnchor).active = true
+//        stackView.center = CGPointMake(self.topNavBar.frame.width/2, 5)
     }
     
     private func _setupBottomNavBar() {
         self.frostedView.addSubview(bottomNavBar)
-        bottomNavBar.snp_makeConstraints { (make) in
-            make.width.equalTo(self.view.bounds.width)
-            make.height.equalTo(navbarHeight)
-            make.left.right.bottom.equalTo(self.view)
-        }
         bottomNavBar.addSubview(micButton) // TODO: toggle recording also toggles the record/pause icon here!
-        micButton.snp_makeConstraints { (make) in
-            make.center.equalTo(bottomNavBar)
-            make.height.width.equalTo(35)
-        }
-        
         bottomNavBar.addSubview(stopButton)
-        stopButton.snp_makeConstraints { (make) in
-            make.top.equalTo(bottomNavBar).offset(5)
-            make.left.equalTo(bottomNavBar).offset(5)
-            make.width.height.equalTo(35)
-        }
-        
-        // if allow cropping, add the scissor button
+        bottomNavBar.addSubview(playButton)
+//        bottomNavBar.addSubview(undoTrimmingButton) // TODO: next release
+
         if allowCropping {
             bottomNavBar.addSubview(scissorButton)
-            scissorButton.snp_makeConstraints { (make) in
-                make.top.equalTo(bottomNavBar).offset(5)
-                make.right.equalTo(bottomNavBar).offset(-10)
-                make.width.height.equalTo(35)
-            }
         }
-        
-        bottomNavBar.addSubview(playButton)
-        playButton.snp_makeConstraints { (make) in
-            make.top.equalTo(bottomNavBar).offset(5)
-            make.left.equalTo(bottomNavBar).offset(5)
-            make.width.height.equalTo(35)
-        }
-        
-        bottomNavBar.addSubview(undoTrimmingButton)
-        undoTrimmingButton.snp_makeConstraints { (make) in
-            make.top.equalTo(scissorButton.snp_top)
-            make.right.equalTo(scissorButton.snp_left).offset(-5)
-            make.width.height.equalTo(35)
-        }
-        
-//        bottomNavBar.addSubview(pauseRecordingButton)
-//        pauseRecordingButton.snp_makeConstraints { (make) in
-//            make.center.equalTo(bottomNavBar)
-//            make.height.width.equalTo(35)
-//        }
     }
     
     private func updateUIForOperation(mode: SwiftySoundMode) {
@@ -555,7 +513,7 @@ public class SwiftySoundRecorder: UIViewController {
     // MARK: buttons
     
     private lazy var cancelButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 10, width: 130, height: 30))
+        let button = UIButton(frame: CGRect(x: 0, y: 10, width: 70, height: 30))
         button.setTitle("Cancel", forState: .Normal)
         
         button.tintColor = UIColor(red: 255, green: 0, blue: 0, alpha: 0.9) // self.view.tintColor
@@ -568,7 +526,7 @@ public class SwiftySoundRecorder: UIViewController {
     }()
     
     private lazy var doneButton: UIButton = {
-        let button = UIButton(frame: CGRect(x: self.view.bounds.width-130, y: 10, width: 130, height: 30))
+        let button = UIButton(frame: CGRect(x: self.view.bounds.width-60, y: 10, width: 60, height: 30))
         button.setTitle("Done", forState: .Normal)
         button.enabled = false
         button.tintColor = UIColor(white: 1, alpha: 0.9)
@@ -582,6 +540,7 @@ public class SwiftySoundRecorder: UIViewController {
     private let playIcon = AssetManager.getImage("ic_play_arrow").imageWithRenderingMode(.AlwaysTemplate)
     private lazy var playButton: UIButton = {
         let button = UIButton(type: .Custom)
+        button.frame = CGRect(x: 0, y: 5, width: 35, height: 35)
         button.hidden = true // hidden default
         button.setBackgroundImage(self.playIcon, forState: .Normal)
         button.tintColor = self.view.tintColor
@@ -595,6 +554,7 @@ public class SwiftySoundRecorder: UIViewController {
     let stopIcon = AssetManager.getImage("ic_stop").imageWithRenderingMode(.AlwaysTemplate)
     private lazy var stopButton: UIButton = {
         let button = UIButton(type: .Custom)
+        button.frame = CGRect(x: 0, y: 5, width: 35, height: 35)
         button.setBackgroundImage(self.stopIcon, forState: .Normal)
         button.contentMode = .ScaleAspectFit
         button.tintColor = UIColor.redColor()
@@ -613,6 +573,8 @@ public class SwiftySoundRecorder: UIViewController {
     // UIImage(named: "ic_mic")?.imageWithRenderingMode(.AlwaysTemplate)
     private lazy var micButton: UIButton = {
         let button = UIButton(type: .Custom)
+        button.frame = CGRect(origin: CGPointMake(self.bottomNavBar.bounds.width/2 - 18, 5), size: CGSizeMake(35, 35))
+//        button.center = self.bottomNavBar.center
         button.setBackgroundImage(self.micIcon, forState: .Normal)
         button.tintColor = UIColor(red: 255, green: 0, blue: 0, alpha: 0.9) // self.view.tintColor
         button.setTitleColor(UIColor(red: 255, green: 0, blue: 0, alpha: 0.9), forState: .Normal)
@@ -625,6 +587,7 @@ public class SwiftySoundRecorder: UIViewController {
     let scissorIcon = AssetManager.getImage("ic_content_cut").imageWithRenderingMode(.AlwaysTemplate)
     private lazy var scissorButton: UIButton = {
         let button = UIButton(type: .Custom)
+        button.frame = CGRect(x: self.view.bounds.width - 45, y: 5, width: 35, height: 35)
         button.tintColor = self.view.tintColor
         button.enabled = false
         button.setTitleColor(self.view.tintColor, forState: .Normal)
@@ -641,7 +604,7 @@ public class SwiftySoundRecorder: UIViewController {
 //        UIImage(named: "ic_undo")?.imageWithRenderingMode(.AlwaysTemplate)
     private lazy var undoTrimmingButton: UIButton = {
         let button = UIButton(type: .Custom)
-        //        button.frame = CGRect(x: self.view.bounds.width - 40, y: 5, width: 30, height: 30)
+        button.frame = CGRect(origin: CGPointZero, size: CGSizeMake(35, 35)) // TODO: coordinate
         button.tintColor = self.view.tintColor
         button.enabled = false
         button.setTitleColor(self.view.tintColor, forState: .Normal)
@@ -672,25 +635,27 @@ public class SwiftySoundRecorder: UIViewController {
     }()
     
     private lazy var audioWaveContainerView: UIView = {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 200))
-        view.clipsToBounds = true
+        let view = UIView() // frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 200)
+//        view.clipsToBounds = true
         view.backgroundColor = UIColor.clearColor() // UIColor.whiteColor()
         view.center = self.view.center
         
         return view
     }()
     
-    let clockIcon = UIImageView(image: AssetManager.getImage("ic_av_timer_2x").imageWithRenderingMode(.AlwaysTemplate))
+    let clockIcon = UIImageView(image: AssetManager.getImage("ic_av_timer").imageWithRenderingMode(.AlwaysTemplate))
     private lazy var timeLabel: UILabel = {
-        let label = UILabel() // TODO:
-        label.translatesAutoresizingMaskIntoConstraints = false
+        let label = UILabel()
+//        label.frame = CGRect(origin: CGPointZero, size: CGSizeMake(130, 30))
+//        label.center = self.topNavBar.center
+//        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private lazy var loadingActivityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
         indicator.color = UIColor.lightGrayColor()
-        indicator.frame = self.audioWaveContainerView.bounds // CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 200)
+        indicator.frame = self.audioWaveContainerView.frame // CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 200)
         indicator.center = self.audioWaveContainerView.center
         indicator.autoresizingMask = [.FlexibleTopMargin, .FlexibleBottomMargin, .FlexibleLeftMargin, .FlexibleRightMargin]
         indicator.hidden = true
@@ -699,10 +664,11 @@ public class SwiftySoundRecorder: UIViewController {
     }()
     
     private lazy var audioSiriWaveView: SCSiriWaveformView = {
-        let flowView = SCSiriWaveformView(frame: self.audioWaveContainerView.bounds)
+        let flowView = SCSiriWaveformView(frame: CGRect(x: 0, y: 0, width: self.audioWaveContainerView.bounds.width, height: self.audioWaveContainerView.bounds.height))
         flowView.translatesAutoresizingMaskIntoConstraints = false
         flowView.alpha = 1.0
         flowView.backgroundColor = UIColor.clearColor()
+//        flowView.frame = self.audioWaveContainerView.bounds
         flowView.center = self.audioWaveContainerView.center
         flowView.clipsToBounds = false
         flowView.primaryWaveLineWidth = 3.0
@@ -716,7 +682,6 @@ public class SwiftySoundRecorder: UIViewController {
         let formView = FDWaveformView()
         formView.translatesAutoresizingMaskIntoConstraints = false
         formView.backgroundColor = UIColor.grayColor()
-        formView.frame = self.audioWaveContainerView.bounds
         formView.hidden = true
         formView.center = self.audioWaveContainerView.center
         formView.wavesColor = UIColor.whiteColor() // self.waveTintColor
@@ -732,6 +697,8 @@ public class SwiftySoundRecorder: UIViewController {
     
     private lazy var backgroundImageView: UIImageView = {
         let imageView = UIImageView(image: Configuration.milkyWayImage)
+        imageView.frame = self.view.bounds
+        imageView.contentMode = .ScaleToFill
         
         return imageView
     }()
@@ -759,13 +726,13 @@ public class SwiftySoundRecorder: UIViewController {
         bar.backgroundColor = UIColor.grayColor()
         bar.layer.borderWidth = 0.5
         bar.layer.borderColor = UIColor(white: 1, alpha: 0.8).CGColor
-        bar.translatesAutoresizingMaskIntoConstraints = false
+//        bar.translatesAutoresizingMaskIntoConstraints = false
         
         return bar
     }()
     
     private lazy var bottomNavBar: UIView = {
-        let bottomBar = UIView()
+        let bottomBar = UIView(frame: CGRect(x: 0, y: self.view.bounds.height - self.navbarHeight, width: self.view.bounds.width, height: self.navbarHeight))
         bottomBar.backgroundColor = UIColor.grayColor()
         bottomBar.layer.borderWidth = 0.5
         bottomBar.layer.borderColor = UIColor(white: 1, alpha: 0.8).CGColor
@@ -1004,7 +971,3 @@ extension SwiftySoundRecorder: NSFileManagerDelegate {
         return true
     }
 }
-
-
-
-

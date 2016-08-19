@@ -19,7 +19,6 @@
 		EB6B48A01D60D7C300622AD9 /* FDWaveformViewForked.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6B489F1D60D7C300622AD9 /* FDWaveformViewForked.framework */; };
 		EB6B48A21D60D7C900622AD9 /* SCSiriWaveformView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6B48A11D60D7C900622AD9 /* SCSiriWaveformView.framework */; };
 		EB6B48A41D60D7CD00622AD9 /* SwiftySoundRecorder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6B48A31D60D7CD00622AD9 /* SwiftySoundRecorder.framework */; };
-		EB6B48A61D60D7D300622AD9 /* SnapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6B48A51D60D7D300622AD9 /* SnapKit.framework */; };
 		EB6B48C11D61205C00622AD9 /* ic_av_timer_2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48A81D61205C00622AD9 /* ic_av_timer_2x.png */; };
 		EB6B48C31D61205C00622AD9 /* ic_av_timer.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48AA1D61205C00622AD9 /* ic_av_timer.png */; };
 		EB6B48C61D61205C00622AD9 /* ic_fiber_manual_record.png in Resources */ = {isa = PBXBuildFile; fileRef = EB6B48AD1D61205C00622AD9 /* ic_fiber_manual_record.png */; };
@@ -98,7 +97,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB6B48A61D60D7D300622AD9 /* SnapKit.framework in Frameworks */,
 				EB6B48A41D60D7CD00622AD9 /* SwiftySoundRecorder.framework in Frameworks */,
 				EB6B48A21D60D7C900622AD9 /* SCSiriWaveformView.framework in Frameworks */,
 				EB6B48A01D60D7C300622AD9 /* FDWaveformViewForked.framework in Frameworks */,

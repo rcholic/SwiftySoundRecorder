@@ -86,12 +86,10 @@ strip_invalid_archs() {
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/FDWaveformViewForked/FDWaveformViewForked.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SCSiriWaveformView/SCSiriWaveformView.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/SnapKit/SnapKit.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SwiftySoundRecorder/SwiftySoundRecorder.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/FDWaveformViewForked/FDWaveformViewForked.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SCSiriWaveformView/SCSiriWaveformView.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/SnapKit/SnapKit.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SwiftySoundRecorder/SwiftySoundRecorder.framework"
 fi

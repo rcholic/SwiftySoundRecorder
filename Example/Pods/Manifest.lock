@@ -12,11 +12,9 @@ PODS:
     - Quick
   - Quick (0.9.3)
   - SCSiriWaveformView (1.0.3)
-  - SnapKit (0.22.0)
   - SwiftySoundRecorder (0.0.1):
     - FDWaveformViewForked (~> 0.5.0)
-    - SCSiriWaveformView (~> 1.0.3)
-    - SnapKit (~> 0.22.0)
+    - SCSiriWaveformView
 
 DEPENDENCIES:
   - FBSnapshotTestCase
@@ -38,8 +36,7 @@ SPEC CHECKSUMS:
   Nimble-Snapshots: 2da4d2ec829b458d6886c06812c52493fce284c9
   Quick: 13a2a2b19a5d8e3ed4fd0c36ee46597fd77ebf71
   SCSiriWaveformView: b8b2756af42addcd31900c3945f24edafefb5395
-  SnapKit: 0dd2fd157330f1ea11fd84da13e6be8a7a22bae0
-  SwiftySoundRecorder: 6628c1eaf490d83f54a5a01de23bb1b7c2d8d6e0
+  SwiftySoundRecorder: 528d34e9643d184e3bc2fa78a283adaea31fbe07
 
 PODFILE CHECKSUM: fb658aa28f8ff10aad0fb7e0e76213b0b0c4de87
 
