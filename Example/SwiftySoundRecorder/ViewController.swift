@@ -22,6 +22,7 @@ class ViewController: UIViewController {
         
         let recordRC = SwiftySoundRecorder()
         recordRC.maxDuration = 7
+        recordRC.themeType = .Light
         recordRC.delegate = self
         presentViewController(recordRC, animated: true, completion: nil)
     }
