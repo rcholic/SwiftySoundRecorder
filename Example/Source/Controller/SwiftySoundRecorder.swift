@@ -386,6 +386,13 @@ public class SwiftySoundRecorder: UIViewController {
         switch mode {
         case .Idling:
             undoTrimmingButton.hidden = true
+            
+            stopButton.hidden = true
+            //        stopButton.enabled = false
+            playButton.hidden = false // alternate playButton and stopButton (for recording)
+            playButton.enabled = curAudioPathStr != nil
+            doneButton.enabled = curAudioPathStr != nil
+            
             scissorButton.enabled = curAudioPathStr != nil
             scissorButton.tintColor = self.view.tintColor
             playButton.hidden = !stopButton.hidden // alternate playButton and stopButton (for recording)
@@ -402,11 +409,11 @@ public class SwiftySoundRecorder: UIViewController {
             _loadAudioSiriWaveView()
             undoTrimmingButton.hidden = true
             playButton.hidden = true
+            stopButton.hidden = false
             stopButton.enabled = true
             scissorButton.enabled = false
             scissorButton.tintColor = self.view.tintColor
             doneButton.enabled = false
-//            cancelButton.enabled = false
             
             leftCropper.alpha = 0
             rightCropper.alpha = 0
@@ -431,11 +438,10 @@ public class SwiftySoundRecorder: UIViewController {
 //            undoTrimmingButton.enabled = true
             scissorButton.enabled = true
             scissorButton.tintColor = self.view.tintColor
-//            playButton.enabled = false
             playButton.setBackgroundImage(playIcon, forState: .Normal) // restore the play icon
             stopButton.enabled = false
             micButton.enabled = false
-            doneButton.enabled = false
+            doneButton.enabled = true
         }
     }
     
@@ -908,14 +914,6 @@ extension SwiftySoundRecorder: AVAudioRecorderDelegate {
         
         audioRecorder = nil
         micButton.setBackgroundImage(micIcon, forState: .Normal)
-        
-        // The UI updates in .Idling state cannot update due to the lag of calling this delegate method! // TODO: find a solution for consistent use of the updateUI() method above
-        // so that the UI does not
-        stopButton.hidden = true
-//        stopButton.enabled = false
-        playButton.hidden = false // alternate playButton and stopButton (for recording)
-        playButton.enabled = true
-        doneButton.enabled = curAudioPathStr != nil
         
         self.operationMode = .Idling
     }
