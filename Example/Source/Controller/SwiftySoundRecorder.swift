@@ -12,6 +12,11 @@ import AVFoundation
 import SCSiriWaveformView
 import FDWaveformViewForked
 
+public enum ThemeType {
+    case Light
+    case Dark
+}
+
 internal enum SwiftySoundMode {
     case Recording
     case Playing
@@ -30,7 +35,9 @@ public class SwiftySoundRecorder: UIViewController {
     public var navBarButtonLabelsDict = Configuration.navBarButtonLabelsDict
     public var maxDuration: CGFloat = 0
     public var allowCropping: Bool = true
+    public var themeType: ThemeType = .Dark
     
+    private var themeColor: ThemeColor = DarkTheme()
     private var statusBarHidden: Bool = false
     private var audioDuration: NSTimeInterval = 0
     private var audioRecorder: AVAudioRecorder? = nil
@@ -65,6 +72,7 @@ public class SwiftySoundRecorder: UIViewController {
         fileManager.delegate = self
         curAudioPathStr = nil
         operationMode = .Idling
+        themeColor = themeType == .Light ? LightTheme() : DarkTheme()
         setupUI()
     }
     
@@ -280,7 +288,7 @@ public class SwiftySoundRecorder: UIViewController {
     
     private func setupUI() {
         let bounds = self.view.bounds
-        
+        self.view.backgroundColor = themeColor.backgroundColor
         // navbars, buttons
         _setupTopNavBar()
         _setupBottomNavBar()
@@ -289,7 +297,13 @@ public class SwiftySoundRecorder: UIViewController {
         rightPanGesture = UIPanGestureRecognizer(target: self, action: #selector(self.didMoveRightCropper(_:)))
         
         print("setting up UI in Sound Recorder")
-        self.view.addSubview(backgroundImageView)
+        if themeType == .Dark {
+            self.view.addSubview(backgroundImageView)
+        } else {
+            self.view.backgroundColor = UIColor.whiteColor()
+            frostedView.backgroundColor = UIColor.whiteColor()
+            frostedView.effect = nil
+        }
         frostedView.frame = bounds
         self.view.addSubview(frostedView)
         
@@ -386,7 +400,6 @@ public class SwiftySoundRecorder: UIViewController {
         switch mode {
         case .Idling:
             undoTrimmingButton.hidden = true
-            
             stopButton.hidden = true
             //        stopButton.enabled = false
             playButton.hidden = false // alternate playButton and stopButton (for recording)
@@ -405,7 +418,6 @@ public class SwiftySoundRecorder: UIViewController {
             rightCropper.alpha = 0
         
         case .Recording:
-            print("recording")
             _loadAudioSiriWaveView()
             undoTrimmingButton.hidden = true
             playButton.hidden = true
@@ -414,11 +426,11 @@ public class SwiftySoundRecorder: UIViewController {
             scissorButton.enabled = false
             scissorButton.tintColor = self.view.tintColor
             doneButton.enabled = false
+            audioSiriWaveView.waveColor = self.themeColor.waveNormalColor
             
             leftCropper.alpha = 0
             rightCropper.alpha = 0
         case .Playing:
-            print("playing...")
             _loadAudioSiriWaveView()
             undoTrimmingButton.hidden = true
             playButton.hidden = false
@@ -427,11 +439,11 @@ public class SwiftySoundRecorder: UIViewController {
             scissorButton.tintColor = self.view.tintColor
             micButton.enabled = false
             doneButton.enabled = curAudioPathStr != nil
+            audioSiriWaveView.waveColor = self.themeColor.waveHighlightedColor
             
             leftCropper.alpha = 0
             rightCropper.alpha = 0
         case .Cropping:
-            print("Cropping....")
             _loadWaveFormView()
             
 //            undoTrimmingButton.hidden = true // TODO: change to false in next release
@@ -525,16 +537,14 @@ public class SwiftySoundRecorder: UIViewController {
         }
     }
     
-    
     // MARK: buttons
-    
     private lazy var cancelButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 5, width: 70, height: 30))
         button.setTitle("Cancel", forState: .Normal)
         
-        button.tintColor = UIColor(red: 255, green: 0, blue: 0, alpha: 0.9) // self.view.tintColor
+        button.tintColor = self.themeColor.btnTintColor
         button.setTitleColor(UIColor(red: 255, green: 0, blue: 0, alpha: 0.9), forState: .Normal)
-        button.setTitleColor(UIColor.grayColor(), forState: .Highlighted)
+        button.setTitleColor(self.themeColor.highlightedTextBtnTitleColor, forState: .Highlighted)
         
         button.addTarget(self, action: #selector(self.cancelRecordingDidPress(_:)), forControlEvents: .TouchUpInside)
         
@@ -545,9 +555,9 @@ public class SwiftySoundRecorder: UIViewController {
         let button = UIButton(frame: CGRect(x: self.view.bounds.width-60, y: 5, width: 60, height: 30))
         button.setTitle("Done", forState: .Normal)
         button.enabled = false
-        button.tintColor = UIColor(white: 1, alpha: 0.9)
-        button.setTitleColor(UIColor(white: 1, alpha: 0.9), forState: .Normal)
-        button.setTitleColor(UIColor.grayColor(), forState: .Highlighted)
+        button.tintColor = self.themeColor.btnTintColor
+        button.setTitleColor(self.themeColor.normalTextBtnTitleColor, forState: .Normal)
+        button.setTitleColor(self.themeColor.highlightedTextBtnTitleColor, forState: .Highlighted)
         button.addTarget(self, action: #selector(self.didTapDoneButton), forControlEvents: .TouchUpInside)
         
         return button
@@ -559,8 +569,9 @@ public class SwiftySoundRecorder: UIViewController {
         button.frame = CGRect(x: 0, y: 5, width: 35, height: 35)
         button.hidden = true // hidden default
         button.setBackgroundImage(self.playIcon, forState: .Normal)
-        button.tintColor = self.view.tintColor
-        button.setTitleColor(UIColor.redColor(), forState: .Highlighted) // ???
+        button.tintColor = self.themeColor.iconBtnTintColor
+        button.setTitleColor(self.themeColor.normalIconBtnTitleColor, forState: .Normal)
+        button.setTitleColor(self.themeColor.highlightedIconBtnTitleColor, forState: .Highlighted)
         button.contentMode = .ScaleAspectFit
         button.addTarget(self, action: #selector(self.togglePlayRecording), forControlEvents: .TouchUpInside)
         
@@ -573,7 +584,7 @@ public class SwiftySoundRecorder: UIViewController {
         button.frame = CGRect(x: 0, y: 5, width: 35, height: 35)
         button.setBackgroundImage(self.stopIcon, forState: .Normal)
         button.contentMode = .ScaleAspectFit
-        button.tintColor = UIColor.redColor()
+        button.tintColor = UIColor(red: 255, green: 0, blue: 0, alpha: 0.9)
         button.enabled = false // default to be disabled
         button.addTarget(self, action: #selector(self.stopRecording), forControlEvents: .TouchUpInside)
         
@@ -652,8 +663,7 @@ public class SwiftySoundRecorder: UIViewController {
     
     private lazy var audioWaveContainerView: UIView = {
         let view = UIView() // frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 200)
-//        view.clipsToBounds = true
-        view.backgroundColor = UIColor.clearColor() // UIColor.whiteColor()
+        view.backgroundColor = UIColor.clearColor() // self.themeColor.waveViewBackgroundColor
         view.center = self.view.center
         
         return view
@@ -662,9 +672,6 @@ public class SwiftySoundRecorder: UIViewController {
     let clockIcon = UIImageView(image: AssetManager.getImage("ic_av_timer").imageWithRenderingMode(.AlwaysTemplate))
     private lazy var timeLabel: UILabel = {
         let label = UILabel()
-//        label.frame = CGRect(origin: CGPointZero, size: CGSizeMake(130, 30))
-//        label.center = self.topNavBar.center
-//        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -689,7 +696,7 @@ public class SwiftySoundRecorder: UIViewController {
         flowView.clipsToBounds = false
         flowView.primaryWaveLineWidth = 3.0
         flowView.secondaryWaveLineWidth = 1.0
-        flowView.waveColor = Configuration.defaultBlueTintColor
+        flowView.waveColor = self.themeColor.waveNormalColor
         
         return flowView
     }()
@@ -697,10 +704,10 @@ public class SwiftySoundRecorder: UIViewController {
     private lazy var waveFormView: FDWaveformView = {
         let formView = FDWaveformView()
         formView.translatesAutoresizingMaskIntoConstraints = false
-        formView.backgroundColor = UIColor.grayColor()
+        formView.backgroundColor = self.themeColor.waveViewBackgroundColor
         formView.hidden = true
         formView.center = self.audioWaveContainerView.center
-        formView.wavesColor = UIColor.whiteColor() // self.waveTintColor
+        formView.wavesColor = UIColor.lightGrayColor()
         formView.progressColor = self.waveHighlightedTintColor
         formView.doesAllowScroll = false
         formView.doesAllowScrubbing = false

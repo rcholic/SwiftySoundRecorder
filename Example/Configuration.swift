@@ -20,7 +20,7 @@ internal enum Theme: ThemeColors {
 
 public struct Configuration {
     // MARK Colors
-    public static var defaultBlueTintColor = UIColor(red: 14, green: 122, blue: 254, alpha: 1)
+    public static var defaultBlueTintColor = UIColor(red: 14.0/255, green: 122.0/255, blue: 254.0/255, alpha: 1.0)
     public static var recorderWaveNormalTintColor = defaultBlueTintColor
     public static var darkOrangeColor = UIColor(red: 255, green: 140, blue: 0, alpha: 1)
     public static var recorderWaveHighlightedTintColor = darkOrangeColor
