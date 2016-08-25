@@ -20,6 +20,21 @@ it, simply add the following line to your Podfile:
 pod "SwiftySoundRecorder"
 ```
 
+## Usage Example
+To use the recorder, you need to:
+1. Create an instance of `SwiftySoundRecorder`: 
+```
+let recorder = SwiftySoundRecorder()
+```
+2. Options of the recorder:
+- Allow cropping: `recorder.allowCropping = true // or false to disallow`
+- Set maximum length of duration (in seconds): `recorder.maxDuration = 10 // 10 seconds`; If not set, the recorder will run forever until user stops it
+- Use the theme colors (.Dark and .Light): `recorder.themeType = .Dark` // 
+
+3. Implement the delegate methods:
+- doneRecordingDidPress(soundRecorder: SwiftySoundRecorder, audioFilePath: String)
+- cancelRecordingDidPress(soundRecorder: SwiftySoundRecorder)
+
 ## Author
 
 rcholic, ivytony@gmail.com
