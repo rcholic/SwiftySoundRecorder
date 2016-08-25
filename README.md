@@ -43,6 +43,9 @@ let recorder = SwiftySoundRecorder()
 - doneRecordingDidPress(soundRecorder: SwiftySoundRecorder, audioFilePath: String)
 - cancelRecordingDidPress(soundRecorder: SwiftySoundRecorder)
 
+4. Present the recorder: `presentViewController(recorder, animated: true, completion: nil)`
+
+
 ## Author
 
 rcholic, ivytony@gmail.com
